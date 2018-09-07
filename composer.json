@@ -1,0 +1,14 @@
+{
+    "name": "vendor/cp",
+    "description": "Description of project cp.",
+    "authors": [
+        {
+            "name": "Nemec",
+            "email": "jannemec@centrum.cz"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "nette/nette": "v2.4.x-dev"
+    }
+}

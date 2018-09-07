@@ -7,7 +7,22 @@
             "email": "jannemec@centrum.cz"
         }
     ],
-    "require": {},
+    "require": {
+        "phpoffice/phpspreadsheet": "dev-master",
+        "phpoffice/phpword": "dev-master",
+        "phpoffice/phpproject": "dev-master",
+        "phpoffice/phpvisio": "dev-master",
+        "mpdf/mpdf": "dev-master",
+        "janmarek/webloader": "dev-master",
+        "joseki/webloader-filters": "dev-master",
+        "oyejorge/less.php": "dev-master",
+        "dibi/dibi": "dev-master",
+        "contributte/utils": "dev-master",
+        "contributte/tracy": "dev-master",
+        "contributte/mailing": "dev-master",
+        "ublaboo/datagrid": "dev-master",
+        "vgrem/php-spo": "dev-master"
+    },
     "require-dev": {
         "nette/nette": "v2.4.x-dev"
     }

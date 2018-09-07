@@ -6,4 +6,24 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Zend\\Escaper\\' => array($vendorDir . '/zendframework/zend-escaper/src'),
+    'Ublaboo\\Responses\\' => array($vendorDir . '/ublaboo/responses/src'),
+    'Ublaboo\\DataGrid\\' => array($vendorDir . '/ublaboo/datagrid/src'),
+    'Symfony\\Polyfill\\Php70\\' => array($vendorDir . '/symfony/polyfill-php70'),
+    'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'Symfony\\Component\\PropertyAccess\\' => array($vendorDir . '/symfony/property-access'),
+    'Symfony\\Component\\Inflector\\' => array($vendorDir . '/symfony/inflector'),
+    'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
+    'PhpOffice\\PhpWord\\' => array($vendorDir . '/phpoffice/phpword/src/PhpWord'),
+    'PhpOffice\\PhpSpreadsheet\\' => array($vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet'),
+    'PhpOffice\\PhpProject\\' => array($vendorDir . '/phpoffice/phpproject/src/PhpProject'),
+    'PhpOffice\\Common\\' => array($vendorDir . '/phpoffice/common/src/Common'),
+    'Office365\\PHP\\Client\\' => array($vendorDir . '/vgrem/php-spo/src'),
+    'Mpdf\\' => array($vendorDir . '/mpdf/mpdf/src'),
+    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
+    'Contributte\\Utils\\' => array($vendorDir . '/contributte/utils/src'),
+    'Contributte\\Tracy\\' => array($vendorDir . '/contributte/tracy/src'),
+    'Contributte\\Mailing\\' => array($vendorDir . '/contributte/mailing/src'),
+    'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
 );

@@ -6,4 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'WebLoader' => array($vendorDir . '/janmarek/webloader'),
+    'PHPVisio' => array($vendorDir . '/phpoffice/phpvisio/Classes'),
+    'PHPProject' => array($vendorDir . '/phpoffice/phpproject/src'),
+    'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
+    'JShrink' => array($vendorDir . '/tedivm/jshrink/src'),
 );

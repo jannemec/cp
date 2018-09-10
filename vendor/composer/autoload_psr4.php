@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'h4kuna\\Gettext\\' => array($vendorDir . '/h4kuna/gettext-latte/src'),
     'Zend\\Escaper\\' => array($vendorDir . '/zendframework/zend-escaper/src'),
     'Ublaboo\\Responses\\' => array($vendorDir . '/ublaboo/responses/src'),
     'Ublaboo\\DataGrid\\' => array($vendorDir . '/ublaboo/datagrid/src'),

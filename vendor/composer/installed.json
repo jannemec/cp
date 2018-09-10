@@ -261,6 +261,104 @@
         ]
     },
     {
+        "name": "h4kuna/gettext-latte",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/h4kuna/gettext-latte.git",
+            "reference": "534d64bff00fe2d54b4cdb03e109d05d922be57f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/h4kuna/gettext-latte/zipball/534d64bff00fe2d54b4cdb03e109d05d922be57f",
+            "reference": "534d64bff00fe2d54b4cdb03e109d05d922be57f",
+            "shasum": ""
+        },
+        "require": {
+            "h4kuna/latte-php-tokenizer": "^1.0",
+            "latte/latte": "^2.0",
+            "nette/application": "^2.0",
+            "nette/caching": "^2.0",
+            "nette/http": "^2.0"
+        },
+        "require-dev": {
+            "nette/bootstrap": "^2.0",
+            "salamium/testinium": "^0.1"
+        },
+        "time": "2017-01-28T09:08:26+00:00",
+        "bin": [
+            "compiler/latte-compiler"
+        ],
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "h4kuna\\Gettext\\": "src\\"
+            },
+            "files": [
+                "src/exceptions.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Milan Matějček",
+                "email": "milan.matejcek@gmail.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "Gettext translator for Latte template",
+        "homepage": "https://github.com/h4kuna/gettext-latte"
+    },
+    {
+        "name": "h4kuna/latte-php-tokenizer",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/h4kuna/latte-php-tokenizer.git",
+            "reference": "0a814bc4fe54036fb7e6ce23af60b224dc737617"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/h4kuna/latte-php-tokenizer/zipball/0a814bc4fe54036fb7e6ce23af60b224dc737617",
+            "reference": "0a814bc4fe54036fb7e6ce23af60b224dc737617",
+            "shasum": ""
+        },
+        "require": {
+            "latte/latte": "^2.0"
+        },
+        "require-dev": {
+            "nette/tester": "~1.0",
+            "tracy/tracy": "^2.3"
+        },
+        "time": "2016-06-03T07:52:14+00:00",
+        "type": "utility",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/LattePhpTokenizer.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Milan Matějček",
+                "email": "milan.matejcek@gmail.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "Transform macro args to array.",
+        "homepage": "https://github.com/h4kuna/latte-php-tokenizer"
+    },
+    {
         "name": "janmarek/webloader",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -1116,18 +1214,21 @@
     },
     {
         "name": "nette/deprecated",
-        "version": "v2.4.1",
-        "version_normalized": "2.4.1.0",
+        "version": "v2.4.2",
+        "version_normalized": "2.4.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/nette/deprecated.git",
-            "reference": "d03c5bfd679d15ddf39abf99dedf054b1078c7ff"
+            "reference": "348e284192f6f6451692b1763b6ed235c28b25ae"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/nette/deprecated/zipball/d03c5bfd679d15ddf39abf99dedf054b1078c7ff",
-            "reference": "d03c5bfd679d15ddf39abf99dedf054b1078c7ff",
+            "url": "https://api.github.com/repos/nette/deprecated/zipball/348e284192f6f6451692b1763b6ed235c28b25ae",
+            "reference": "348e284192f6f6451692b1763b6ed235c28b25ae",
             "shasum": ""
+        },
+        "require": {
+            "php": "<7.2"
         },
         "require-dev": {
             "latte/latte": "^2.2",
@@ -1143,7 +1244,7 @@
             "nette/utils": "^2.2",
             "tracy/tracy": "^2.2"
         },
-        "time": "2017-07-14T07:25:32+00:00",
+        "time": "2018-02-06T16:29:40+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

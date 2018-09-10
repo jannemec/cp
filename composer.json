@@ -21,7 +21,8 @@
         "contributte/tracy": "dev-master",
         "contributte/mailing": "dev-master",
         "ublaboo/datagrid": "dev-master",
-        "vgrem/php-spo": "dev-master"
+        "vgrem/php-spo": "dev-master",
+        "h4kuna/gettext-latte": "dev-master"
     },
     "require-dev": {
         "nette/nette": "v2.4.x-dev"

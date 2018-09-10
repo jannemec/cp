@@ -1,15 +1,169 @@
+php:       
+    date.timezone: Europe/Prague
+    session.save_path: %wwwDir%/sessions
+
 parameters:
+    # Nastavení doby po kterou se drží oprávnění
+    authorizatorCacheTimeout: 300
+    mail:
+        to: jan.nemec@otk.cz
+        from: jan.nemec@otk.cz
+    Framework:
+        iAmUsingBadHost: false
+        email: jan.nemec@otk.cz
+    ad_controllers: 
+        1: 'dcotk1.otk.cz'
+        2: 'dcotk2.otk.cz'
+    ad_base_dn: ""
+    ad_account_suffix: ""
+    ad_username: ""
+    ad_password: ""
+    SHAREPOINT:
 
+latte:
+    xhtml: TRUE
 
-application:
-	errorPresenter: Error
-	mapping:
-		*: App\*Module\Presenters\*Presenter
-
+tracy:
+    email: jan.nemec@casaleproject.cz
+    maxLength: 2500
 
 session:
-	expiration: 14 days
+    expiration: 14 days
+    autostart: true
 
+database:
+    default:
+        dsn:          "mysql:host=127.0.0.1;dbname=otk"
+        #dsn:          "mysql:host=helpdesk.otk.cz;dbname=otk"
+        user:         ""
+        password:     ""
+        options:      [PDO::MYSQL_ATTR_COMPRESS = true]
+        debugger:     false        # panel v debugger baru
+        explain:      false        # explain dotazů v debugger bar
+        conventions:  discovered  # nebo static nebo vaší jméno třídy, výchozí je discovered
+        autowired:    true
+
+application:
+    errorPresenter: Error
+    mapping:
+        *: App\*Module\Presenters\*Presenter
 
 services:
-	router: App\RouterFactory::createRouter
+    router: App\RouterFactory::createRouter
+    systemService: model\System(connection: @database.default.context, ad: @ad)
+    userrightService: jannemec\UserRight(dbf: @database.default.context)
+    authenticator:  Model\SysAuthenticator(dbf: @database.default.context)
+    sharepointService: jannemec\Sharepoint(params: %SHAREPOINT%, cache: @cache)
+    authorizator:
+        class: Model\SysAuthorizator
+        factory: Model\SysAuthorizator::getInstanceSingleton(dbf: @database.default.context, cache: @cache)
+    routerFactory: App\RouterFactory
+    cache: Nette\Caching\Cache(@cacheStorage)
+    wlCssFilter: WebLoader\Filter\CssUrlsFilter(%wwwDir%, '/otk')
+    lessFilter: WebLoader\Filter\LessFilter
+    cssMin: Joseki\Webloader\CssMinFilter
+    jsMin: Joseki\Webloader\JsMinFilter
+    nette.latteFactory:
+        setup:
+            - addFilter(null,[Model\Filters(),loader])
+
+extensions:
+    gettextLatteExtension: h4kuna\Gettext\DI\GettextLatteExtension
+    webloader: WebLoader\Nette\Extension
+    ajaxHistory: VojtechDobes\NetteAjax\HistoryExtension
+    dibi: Dibi\Bridges\Nette\DibiExtension22
+
+gettextLatteExtension:
+    langs:
+        cs: cs_CZ.utf8
+        en: en_US.utf8
+
+webloader:
+    css:
+        cssPrint:
+            sourceDir: %wwwDir%/styles 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            files:
+                - defaultPrint.css
+        css:
+            sourceDir: %wwwDir%/styles 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            attrs: 
+            files:
+                - famfamfam.css
+                - font-awesome.min.css
+                - pure/base-min.css
+                - pure/base-context-min.css
+                - pure/grids-core-min.css
+                - pure/grids-responsive-min.css
+                - pure/forms-min.css
+                - pure/forms-nr-min.css
+                - pure/tables-min.css
+                - pure/buttons-min.css
+                - pure/buttons-core-min.css
+                - default.css
+                - %wwwDir%/js/dateInput.css
+                #- forms.css
+                - %wwwDir%/js/css/jquery-ui.min.css
+                - %wwwDir%/js/jquery-ui-timepicker-addon.css
+            filters:
+                - @cssMin
+            fileFilters:
+                - @wlCssFilter  
+        cssOld:
+            sourceDir: %wwwDir%/styles 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            files:
+                - famfamfam.css
+                - font-awesome.min.css
+                - pure/base-min.css
+                - pure/base-context-min.css
+                - pure/grids-core-min.css
+                - pure/grids-responsive-old-ie-min.css
+                - pure/forms-min.css
+                - pure/forms-nr-min.css
+                - pure/tables-min.css
+                - pure/buttons-min.css
+                - pure/buttons-core-min.css
+                - default.css
+                - %wwwDir%/js/dateInput.css
+                #- forms.css
+                - %wwwDir%/js/css/jquery-ui.min.css
+                - %wwwDir%/js/jquery-ui-timepicker-addon.css
+            filters:
+                - @cssMin
+            fileFilters:
+                - @wlCssFilter 
+    js:
+        js:
+            sourceDir: %wwwDir%/js 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            attrs: 
+            files:
+                - netteForms.min.js
+                - nette.ajax.js
+                - extensions/confirm.ajax.js
+                - extensions/spinner.ajax.js
+                - extensions/scrollTo.ajax.js
+                - dateInput.js
+                #- history.ajax.js
+                - my.js
+            filters:
+                - @jsMin
+        jQuery:
+            sourceDir: %wwwDir%/js 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            files:
+                - jquery-3.3.1.min.js
+                #- jquery.json.js
+                - jquery-ui.min.js
+                - jquery-ui-timepicker-addon.js
+                - jquery.watermark.min.js
+                - ui/i18n/datepicker-cs.js
+            filters:
+                - @jsMin

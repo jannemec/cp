@@ -26,4 +26,5 @@ return array(
     'Contributte\\Tracy\\' => array($vendorDir . '/contributte/tracy/src'),
     'Contributte\\Mailing\\' => array($vendorDir . '/contributte/mailing/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
+    'Adldap\\' => array($vendorDir . '/adldap/adldap/src'),
 );

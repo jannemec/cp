@@ -4,8 +4,65 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "27f1ffcf5cc1194bdc91f1f947287b22",
+    "content-hash": "7aedc6af50fd241acb23fe91d8abbccf",
     "packages": [
+        {
+            "name": "adldap/adldap",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/adldap/adLDAP.git",
+                "reference": "63fd63e4f680e521bdf6cba23e0e524a2c34c0d5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/adldap/adLDAP/zipball/63fd63e4f680e521bdf6cba23e0e524a2c34c0d5",
+                "reference": "63fd63e4f680e521bdf6cba23e0e524a2c34c0d5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ldap": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.9.*",
+                "phpunit/phpunit": "4.6.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Adldap\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Scott Barnett",
+                    "email": "scott@wiggumworld.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Richard Hyland",
+                    "email": "adldap@richardhyland.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Steve Bauman",
+                    "email": "steven_bauman@outlook.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A PHP LDAP Library for Active Directory Manipulation",
+            "keywords": [
+                "active directory",
+                "ldap",
+                "windows"
+            ],
+            "time": "2015-06-16T12:41:10+00:00"
+        },
         {
             "name": "contributte/mailing",
             "version": "dev-master",
@@ -3296,6 +3353,7 @@
         "contributte/mailing": 20,
         "ublaboo/datagrid": 20,
         "vgrem/php-spo": 20,
+        "adldap/adldap": 20,
         "nette/nette": 20
     },
     "prefer-stable": false,

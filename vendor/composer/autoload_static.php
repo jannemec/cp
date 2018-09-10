@@ -104,6 +104,10 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
             'Contributte\\Mailing\\' => 20,
             'Complex\\' => 8,
         ),
+        'A' => 
+        array (
+            'Adldap\\' => 7,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -186,6 +190,10 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
+        'Adldap\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/adldap/adldap/src',
         ),
     );
 

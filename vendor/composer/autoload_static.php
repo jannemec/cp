@@ -15,6 +15,7 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
         '5c07e51810209209735cf7390eb0937b' => __DIR__ . '/..' . '/nette/deprecated/src/loader.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
+        '8b147e439900c0bbfaa2a80f6ff87a6b' => __DIR__ . '/..' . '/h4kuna/latte-php-tokenizer/src/LattePhpTokenizer.php',
         'abede361264e2ae69ec1eee813a101af' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/abs.php',
         '21a5860fbef5be28db5ddfbc3cca67c4' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acos.php',
         '1546e3f9d127f2a9bb2d1b6c31c26ef1' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acosh.php',
@@ -57,9 +58,14 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
         '883af48563631547925fa4c3b48ead07' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/multiply.php',
         'f190e3308e6ca23234a2875edc985c03' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/divideby.php',
         'ac9e33ce6841aa5bf5d16d465a2f03a7' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/divideinto.php',
+        '51db5fd7c7641348673f1394ad567ffd' => __DIR__ . '/..' . '/h4kuna/gettext-latte/src/exceptions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'h' => 
+        array (
+            'h4kuna\\Gettext\\' => 15,
+        ),
         'Z' => 
         array (
             'Zend\\Escaper\\' => 13,
@@ -80,6 +86,7 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
+            'Picqer\\Barcode\\' => 15,
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'PhpOffice\\PhpProject\\' => 21,
@@ -111,6 +118,10 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
     );
 
     public static $prefixDirsPsr4 = array (
+        'h4kuna\\Gettext\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/h4kuna/gettext-latte/src',
+        ),
         'Zend\\Escaper\\' => 
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-escaper/src',
@@ -146,6 +157,10 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Picqer\\Barcode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/picqer/php-barcode-generator/src',
         ),
         'PhpOffice\\PhpWord\\' => 
         array (
@@ -729,6 +744,9 @@ class ComposerStaticInitbb69bd54fbf45cd1ce482518d121bdf9
         'Tracy\\Logger' => __DIR__ . '/..' . '/tracy/tracy/src/Tracy/Logger.php',
         'Tracy\\OutputDebugger' => __DIR__ . '/..' . '/tracy/tracy/src/Tracy/OutputDebugger.php',
         'TypeError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/TypeError.php',
+        'VojtechDobes\\NetteAjax\\HistoryExtension' => __DIR__ . '/..' . '/vojtech-dobes/nette-ajax-history/src/HistoryExtension.php',
+        'VojtechDobes\\NetteAjax\\OnRequestHandler' => __DIR__ . '/..' . '/vojtech-dobes/nette-ajax-history/src/OnRequestHandler.php',
+        'VojtechDobes\\NetteAjax\\OnResponseHandler' => __DIR__ . '/..' . '/vojtech-dobes/nette-ajax-history/src/OnResponseHandler.php',
         'aCssAtBlockEndToken' => __DIR__ . '/..' . '/natxet/CssMin/src/CssMin.php',
         'aCssAtBlockStartToken' => __DIR__ . '/..' . '/natxet/CssMin/src/CssMin.php',
         'aCssDeclarationToken' => __DIR__ . '/..' . '/natxet/CssMin/src/CssMin.php',

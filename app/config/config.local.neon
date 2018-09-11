@@ -1,7 +1,22 @@
 parameters:
+    SHAREPOINT:
+        urkl: "https://otkgroup.sharepoint.com"
+        username: "jnemec@chpn.cz"
+        password: "Jnem1281"
+    AD:
+        controllers: 
+            1: 'dcotk1.otk.cz'
+            2: 'dcotk2.otk.cz'
+        base_dn: ""
+        account_suffix: ""
+        username: ""
+        password: ""
 
 
 database:
-	dsn: 'mysql:host=127.0.0.1;dbname=test'
-	user:
-	password:
+    dsn: 'mysql:host=127.0.0.1;dbname=cp'
+    user: cp
+    password: cp2018
+    options: 
+        a: b
+ 

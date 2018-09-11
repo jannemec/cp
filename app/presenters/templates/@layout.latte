@@ -1,19 +1,80 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-
-	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
+<html lang="cs" xml:lang="cs" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <title n:inner-snippet="title">{(isset($title) ? ($title) : '') . 'Casale Project'}</title>
+    <meta name="description" content="{(isset($description) ? $description : '') . 'Casale Project'}" />
+    <meta name="keywords" content="{(isset($keywords) ? $keywords : '') . 'intranet report data'}" />
+    <meta name="Author" content="Jan Nemec" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="copyright" content="&copy; 2016 Jan Nemec" />
+    <meta name="date" content="2016-10-01" />
+    <meta name="robots" content="ALL , FOLLOW" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{$baseUri}favicon.ico" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
+    <link rel="profile" href="http://microformats.org/profile/hcard" /> 
+    <link rel="shortcut icon" href="{$baseUri}favicon.ico" />
+    <!--[if gt IE 8]><!-->
+    {control css}
+    <!--<![endif]-->
+    {control cssPrint}
+    
+    {control jQuery}
+    {control js}
+    <!--<script src="{$baseUri}js/extensions/history.ajax.js"></script>-->
+{php
+if (isset($header_text)) {
+  echo $header_text;
+};
+}
+{include #header_tmpl}
 </head>
 
-<body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 
-	{include content}
+<body{isset($body_ads) ? $body_ads : ''|noescape}>
+    <div class="myContainer">
+        {if !isset($noHeader) || !$noHeader}
+        <div id="header" class="pure-g noPrint">
+            <div class="pure-u-sm-1">
+                <a href="{$baseUri}"><img src="{$baseUri}images/logo-cp.png" alt="Casale Project" /></a>
+                <span class="page_title" n:snippet="pageTitleSnippet">{isset($page_title) ? $page_title : ' '}</span>
+                <ul class="langs">
+                    {if $presenter->getLang() != 'cs'}
+                    <li><a href="{$presenter->link('Home:setLang', array('lang' => 'cs', 'backlink' => $presenter->name . ':' . $presenter->view))}">CZ <img src="{$baseUri}images/cz.png" height="11" width="16" /></a></li>
+                    {/if}            
+                    {if $presenter->getLang() != 'en'}
+                    <li><a href="{$presenter->link('Home:setLang', array('lang' => 'en', 'backlink' => $presenter->name . ':' . $presenter->view))}">EN <img src="{$baseUri}images/gb.png" height="11" width="16" /></a></li>
+                    {/if}
+                    {if $presenter->getLang() != 'de'}
+                    <li><a href="{$presenter->link('Home:setLang', array('lang' => 'de', 'backlink' => $presenter->name . ':' . $presenter->view))}">DE <img src="{$baseUri}images/de.png" height="11" width="16" /></a></li>
+                    {/if}
+                </ul>
 
-	{block scripts}
-	<script src="https://nette.github.io/resources/js/netteForms.min.js"></script>
-	{/block}
+                {control loginForm}
+            </div>
+        </div>
+
+        <div id="topmenu" class="pure-g noPrint" >
+            <div class="pure-u-sm-1" n:snippet="topMenuSnippet">
+                {control topMenu}
+            </div>
+        </div>
+        {/if}
+        {snippet flashes}
+        <div n:foreach="$flashes as $flash" class="flash pure-u-1-1 {$flash->type}">{$flash->message|noescape}</div>
+        {/snippet}
+        <div class="pure-g content" n:snippet="contentSnippet">
+            {include #content}
+        </div>
+        
+        {if !isset($noFooter) || !$noFooter}
+        <div id="footer" class="pure-g small footer noPrint">
+            <div class="pure-u-sm-1">
+                {_'Design'} 2016 &copy; <a href="http://www.otk.cz" title="OTK GROUP, a.s.">OTK GROUP, a.s.</a>
+            </div>
+        </div>
+        {/if}
+    </div>
 </body>
 </html>

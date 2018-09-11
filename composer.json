@@ -1,6 +1,6 @@
 {
     "name": "vendor/cp",
-    "description": "Description of project cp.",
+    "description": "CP company",
     "authors": [
         {
             "name": "Nemec",
@@ -8,6 +8,8 @@
         }
     ],
     "require": {
+        "php": ">=7.2.0",
+        "nette/nette": "v2.4.x-dev",
         "phpoffice/phpspreadsheet": "dev-master",
         "phpoffice/phpword": "dev-master",
         "phpoffice/phpproject": "dev-master",
@@ -22,9 +24,12 @@
         "contributte/mailing": "dev-master",
         "ublaboo/datagrid": "dev-master",
         "vgrem/php-spo": "dev-master",
-        "adldap/adldap": "dev-master"
+        "h4kuna/gettext-latte": "dev-master",
+        "adldap/adldap": "dev-master",
+        "vojtech-dobes/nette-ajax-history": "dev-master",
+        "picqer/php-barcode-generator": "dev-master"
     },
     "require-dev": {
-        "nette/nette": "v2.4.x-dev"
+        
     }
 }

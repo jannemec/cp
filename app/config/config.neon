@@ -1,15 +1,122 @@
+php:       
+    date.timezone: Europe/Prague
+    session.save_path: %wwwDir%/sessions
+
 parameters:
+    # Nastavení doby po kterou se drží oprávnění
+    authorizatorCacheTimeout: 300
+    mail:
+        to: jan.nemec@casaleproject.cz
+        from: jan.nemec@casaleproject.cz
+    Framework:
+        iAmUsingBadHost: false
+        email: jan.nemec@casaleproject.cz
+    AD: 
+    SHAREPOINT:
 
+latte:
+    xhtml: TRUE
 
-application:
-	errorPresenter: Error
-	mapping:
-		*: App\*Module\Presenters\*Presenter
-
+tracy:
+    email: jan.nemec@casaleproject.cz
+    maxLength: 2500
 
 session:
-	expiration: 14 days
+    expiration: 14 days
+    autostart: true
 
+application:
+    errorPresenter: Error
+    mapping:
+        *: App\*Module\Presenters\*Presenter
 
 services:
-	router: App\RouterFactory::createRouter
+    router: App\RouterFactory::createRouter
+    systemService: Model\Jannemec\System(connection: @database.default.context, ad: @ad)
+    ad: Adldap\AD(['domain_controllers':  %AD.controllers%, 'account_suffix': %AD.account_suffix%, 'base_dn': %AD.base_dn%, 'admin_username': %AD.username%, 'admin_password': %AD.password%, 'use_ssl': false, 'use_tls': false], cache: @cache) 
+    userrightService: Model\Jannemec\UserRight(dbf: @database.default.context)
+    authenticator:  Model\SysAuthenticator(dbf: @database.default.context)
+    sharepointService: Model\Jannemec\Sharepoint(params: %SHAREPOINT%, cache: @cache)
+    authorizator:
+        class: Model\SysAuthorizator
+        factory: Model\SysAuthorizator::getInstanceSingleton(dbf: @database.default.context, cache: @cache)
+    routerFactory: App\RouterFactory
+    cache: Nette\Caching\Cache(@cacheStorage)
+    wlCssFilter: WebLoader\Filter\CssUrlsFilter(%wwwDir%)
+    lessFilter: WebLoader\Filter\LessFilter
+    jwlCssMinFilter: Joseki\Webloader\CssMinFilter
+    cssMin: Joseki\Webloader\CssMinFilter
+    jsMin: Joseki\Webloader\JsMinFilter
+    nette.latteFactory:
+        setup:
+            - addFilter(null,[Model\Filters(),loader])
+
+extensions:
+    webloader: WebLoader\Nette\Extension
+    gettextLatteExtension: h4kuna\Gettext\DI\GettextLatteExtension
+    ajaxHistory: VojtechDobes\NetteAjax\HistoryExtension
+    dibi: Dibi\Bridges\Nette\DibiExtension22
+
+gettextLatteExtension:
+    langs:
+        cs: cs_CZ.utf8
+        en: en_US.utf8
+
+webloader:
+    css:
+        cssPrint:
+            sourceDir: %wwwDir%/styles 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            filters:
+                - @cssMin
+            fileFilters:
+                - @lessFilter
+                - @wlCssFilter
+            files:
+                - defaultPrint.css
+
+        css:
+            sourceDir: %wwwDir%/styles 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            filters:
+                - @cssMin
+            fileFilters:
+                - @lessFilter
+                - @wlCssFilter
+            files:
+                - fontawesome/css/all.min.css
+                - pure/base-min.css
+                - pure/base-context-min.css
+                - pure/grids-core-min.css
+                - pure/grids-responsive-min.css
+                - pure/forms-min.css
+                - pure/forms-nr-min.css
+                - pure/tables-min.css
+                - pure/buttons-min.css
+                - pure/buttons-core-min.css
+                - default.css
+                #- forms.css
+                - %wwwDir%/js/jquery-ui.min.css
+    js:
+        js:
+            sourceDir: %wwwDir%/js 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            attrs: 
+            files:
+                - netteForms.min.js
+                - nette.ajax.js
+                - extensions/confirm.ajax.js
+                - extensions/spinner.ajax.js
+                - extensions/scrollTo.ajax.js
+                #- history.ajax.js
+                - my.js
+        jQuery:
+            sourceDir: %wwwDir%/js 
+            tempDir: %wwwDir%/webloader
+            tempPath: webloader
+            files:
+                - jquery.min.js
+                - jquery-ui.min.js

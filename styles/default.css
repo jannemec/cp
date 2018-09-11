@@ -1,0 +1,372 @@
+/* 
+    Created on : 10. 9. 2018, 8:44:47
+    Author     : Nemec
+*/
+/* 
+    Document   : default.css
+    Created on : 14.6.2011, 17:31:20
+    Author     : nemec
+    Description:
+        Purpose of the stylesheet follows.
+        colors: 
+*/
+body { 
+    background: #fff;
+    font-size: 100%;
+    font-family: Helvetica, Arial, Verdana;
+    color: #666;
+}
+
+#header, #footer, #topmenu, #notopmenu {
+    background: #fff   
+}
+
+#header {
+    height: 64px;
+    border-bottom: 2px solid #00baff;
+}
+
+#header img {
+    border: 0px;
+    height: 54px;
+    width: 154px;
+    float: left;
+    margin: 0px;
+}
+
+#header .page_title {
+    float: right;
+    display: block;
+    margin: 2px 9px 0 0;
+    color: #003CFF;
+    font-weight: bold;
+    font-size: 150%;
+}
+
+#topmenu {
+    height: 33px;
+}
+
+ul.ui-menu {
+    z-index: 10;
+}
+
+
+.mymenu {
+    width: auto;
+    z-index: 100;
+}
+
+.mymenu a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.mymenu li, .mymenu li a {
+    min-width: 105px;
+}
+
+ul.mymenu {
+    float: left;
+    width: auto;
+    display: block;
+    margin-top: 0.2ex;
+}
+
+ul.ui-menu .ui-menu-item {
+    font-style: italic;
+}
+
+ul.ui-menu .ui-menu-item a {
+    white-space: nowrap;
+    font-style: normal;
+    color: black;
+}
+ul.ui-menu .ui-menu-item a span {
+    margin-left: 8px;
+}
+
+
+#content {
+    border-bottom: 2px solid #00baff;
+}
+
+#footer {
+    margin-top: 10px;
+    height: 20px;
+    text-align: center;
+    color: #999;
+}
+
+#footer a {
+    color: #00baff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.first_item {
+    margin-top: 9px;
+}
+
+.content h1, .content h2, .content h3 {
+    color: #000080;
+}
+.content h2, h3 {	
+	margin: 0 0 15px 0;
+	padding: 5px 15px;
+	font-size: 120%;
+	border-bottom: 1px solid #E5E5E5;
+}
+
+.content h2 {	
+	font-weight: bolder;
+}
+
+.content h3 {	
+	font-weight: normal;
+}
+
+div.leftCol h1 {
+	margin: 45px 0 0 15px;
+	padding: 0;
+	font-size: 170%;
+	font-weight: normal;
+	color: navy;	
+}
+
+div.leftCol a {
+	color: #00baff;
+	text-decoration: none;	
+}
+
+div.leftCol ul {
+	margin: 0px 0px;
+        list-style-type: none;
+}
+
+div.leftCol ul li {
+	margin: 0px 0px 0px 0;
+	padding: 10px 0px 10px 15px;
+	border-bottom: 1px solid #E0E0E0;
+}
+
+div.leftCol ul li a {
+	font-weight: normal;
+}
+
+div.leftCol ul li a:hover {
+	color: #666666;
+}
+
+div.leftCol p {
+	margin: 0;
+	padding: 0px 14px;
+	border-left: 10px solid #E0E0E0;
+}
+
+div.leftCol h2 {
+	height: 30px;
+	margin: 0 0 10px 0px;
+	padding: 6px 0 2px 0px;
+	text-transform: capitalize;
+	font-size: 22px;
+	font-weight: normal;
+	color: #000000;
+}
+
+
+div.leftCol p {
+	line-height: 200%;
+}
+
+.main p, .main dl, .main h1, .main img, .main h3 {
+    margin-left: 5px;
+}
+
+
+
+
+.nr {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.dt {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+a {
+	text-decoration: none;
+	color: #00baff;	
+}
+
+a:hover {
+	color: #2eff29;
+}
+
+    
+#header ul.langs {
+    float: right;
+    display: block;
+    clear: right;
+    list-style:none;
+    margin: 0px 0;
+    padding: 0px 1px 0 10px;
+}
+
+#header ul.langs li {
+    float:left;
+    clear: none;
+    width:3em;
+    text-align:center;
+    color: #FFF; /*#FCF7D3;*/
+    font-weight: bold;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-top: 0px;
+    padding: 0px;
+    font-size: 9pt;
+    
+}
+
+#header ul.langs li img {
+    margin-top: 2px;
+    width: 16px;
+    height: 11px;
+    display: inline;
+    float: none;
+}
+
+#header ul.langs li a {
+    text-decoration: none;
+}
+
+
+.error, .alert, .notice, .success, .info {padding:0.8em;margin-bottom:1em;border:2px solid #ddd;}
+.error, .alert {background:#fbe3e4;color:#8a1f11;border-color:#fbc2c4;}
+.notice {background:#fff6bf;color:#514721;border-color:#ffd324;}
+.success {background:#e6efc2;color:#264409;border-color:#c6d880;}
+.info {background:#d5edf8;color:#205791;border-color:#92cae4;}
+.error a, .alert a {color:#8a1f11;}
+.notice a {color:#514721;}
+.success a {color:#264409;}
+.info a {color:#205791;}
+
+.button-success,
+.button-error,
+.button-warning,
+.button-secondary {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+    background: rgb(28, 184, 65); /* this is a green */
+}
+
+.button-error {
+    background: rgb(202, 60, 60); /* this is a maroon */
+}
+
+.button-warning {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.button-secondary {
+    background: rgb(66, 184, 221); /* this is a light blue */
+}
+
+
+span.loginformusername {
+    float: right;
+    color: navy;
+    font-weight: bold;
+    padding-top: 0.8ex;
+    font-size: 75%;
+}
+form.loginform {
+    float: right;
+    clear: right;
+}
+
+form.loginform fieldset {
+    padding: 0px;
+    margin: 0px;
+}
+
+form.loginform input[type="text"], form.loginform input[type="password"] {
+    padding: 1px;
+    width: 6em;
+}
+
+
+form label.required:after {
+    content:"*"; 
+    color: red;
+    position: absolute; 
+    margin: 0px 0px 0px 0px; 
+    vertical-align: top;
+    padding: 0 5px 0 0;
+}
+
+form.loginform label.required:after {
+    content:""; 
+    padding: 0 0px 0 0;
+}
+
+form input[type="checkbox"] {
+    float: right;
+    position: relative;
+    left: 1.7em;
+}
+
+
+#ajax-spinner {
+    background: white url('../images/ajax-loader-spinner-small.gif') no-repeat 50% 50%;
+    padding: 10px;
+    margin: 0;
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    border: solid 1px #ccc;
+    top: 50%;
+    left: 50%;
+}
+
+div.widget_header {
+    border: black 1px dotted;
+    background-color: Silver;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color : #FFFAF0;
+    font-size : 13;
+    font-weight : bolder;
+    margin-top: 1ex;
+}
+
+div.widget_body {
+    border: black 1px dotted;
+    background-color: White;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+div.widget_footer {
+    border: black 1px dotted;
+    background-color: Silver;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color : #FFFAF0;
+    font-size : 13;
+    font-weight : bolder;
+    margin-top: 0;
+}

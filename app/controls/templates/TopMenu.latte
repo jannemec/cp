@@ -1,0 +1,15 @@
+{foreach $menu as $link}
+    {\controls\TopMenu::showLink($link)|noescape}
+{/foreach}
+<script type="text/javascript">
+  $(function() {
+    $(".mymenu").menu({ position: { my: "left top", at: "left bottom" }});
+    $(".mymenu ul").mouseleave(function () {
+        $(this.parentNode.parentNode ).blur();
+        $('.mymenu').menu({ position: { my: "left top", at: "left bottom" } });
+    });
+    $(".mymenu ul").mouseover(function () {
+        $('.mymenu').menu({ position: { my: "left top", at: "right top" } });
+    });
+  });
+</script>

@@ -1,0 +1,60 @@
+{block #header_tmpl}
+
+{/block}
+{block content}
+<div class="pure-u-sm-17-24 main">
+    <h1 class="first_item">Přehled oprávnění/zdrojů</h1>
+
+    <table class="pure-table pure-table-bordered" style="margin-left: auto; margin-right: auto;">
+        <caption>Oprávnění/zdroje</caption>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>název</th>
+                <th>popis</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <form action="javascript: addRight('{$presenter->link('addRight!', array('right_name' => '_name_'))}')" method="GET" class="pure-form pure-form-aligned">
+                <tr>
+                    <th><button type="submit" class="button-xsmall pure-button pure-button-primary"><i class="fa fa-plus"></i></button></th>
+                    <th colspan="3" style="text-align: left;"><input name="right_name" id="new_name" value="{$right_name}" /></th>
+                </tr>
+            </form>
+            <tr>
+                <th colspan="4">Zobrazení {date('j.n.Y H:i:s')}</th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {foreach $rights as $right}
+            <tr>
+                <td>{$right->id}</td>
+                <td>{$right->name}</td>
+                <td>{$right->description}</td>
+                <td><a class="button-xsmall pure-button pure-button-primary" href="#" onclick="deleteRight({$presenter->link('deleteRight!', array('id' => $right->id))}, {$right->name}); return(false);"><i class="fa fa-minus"></i></a>
+                    <a class="button-xsmall pure-button pure-button-primary" href="{$presenter->link('editRight', array('id' => $right->id))}"><i class="fa fa-edit"></i></a></td>
+            </tr>
+            {/foreach}
+        </tbody>
+
+    </table>
+<script type="text/javascript">
+    function deleteRight(link, name) {
+        if (confirm("Opravdu smazat oprávnění/zdroj " + name + "?")) {
+            document.location = link;
+        }
+    }
+
+    function addRight(link) {
+        if ($('#new_name')[0].value === "") {
+            alert('Vlož jméno role!');
+            $('#new_name')[0].focus();
+        } else {
+            link = link.replace('_name_', escape($('#new_name')[0].value));
+            document.location = link;
+        }
+    }
+</script>
+</div>
+{/block}

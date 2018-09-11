@@ -119,7 +119,7 @@ class HomePresenter extends BasePresenter {
         if (!empty($tree)) {
             echo '<ul>';
             foreach($tree as $key => $val) {
-                echo '<li' . ($val['user']['disabled'] ? ' data-jstree=\'{"icon":"fa fa-trash"}\'' : (empty($val['subtree']) ? '' : ' data-jstree=\'{"icon":"fa fa-group"}\'')) . '>';
+                echo '<li' . ($val['user']['disabled'] ? ' data-jstree=\'{"icon":"fas fa-trash"}\'' : (empty($val['subtree']) ? ' data-jstree=\'{"icon":"far fa-user"}\'' : ' data-jstree=\'{"icon":"fas fa-users"}\'')) . '>';
                 echo $key . ': ' . $val['user']['displayname'] . '(' . $val['user']['department'] . ')';
                 if (!empty($val['subtree'])) {
                     $this->showCompanyTree($val['subtree']);

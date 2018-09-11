@@ -13,6 +13,7 @@ parameters:
         email: jan.nemec@casaleproject.cz
     AD: 
     SHAREPOINT:
+        url: 
 
 latte:
     xhtml: TRUE

@@ -5,12 +5,12 @@ parameters:
         password: "Jnem1281"
     AD:
         controllers: 
-            1: 'dcotk1.otk.cz'
-            2: 'dcotk2.otk.cz'
-        base_dn: ""
+            1: 'prgdc11.chpn.cz'
+            2: 'prgdc12.chpn.cz'
+        base_dn: "DC=chpn,DC=cz"
         account_suffix: ""
-        username: ""
-        password: ""
+        username: "chpn\\admin-jn"
+        password: "Jnem1281"
 
 
 database:

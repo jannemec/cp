@@ -42,7 +42,7 @@ services:
         factory: Model\SysAuthorizator::getInstanceSingleton(dbf: @database.default.context, cache: @cache)
     routerFactory: App\RouterFactory
     cache: Nette\Caching\Cache(@cacheStorage)
-    wlCssFilter: WebLoader\Filter\CssUrlsFilter(%wwwDir%)
+    wlCssFilter: WebLoader\Filter\CssUrlsFilter(%wwwDir%, '/cp')
     lessFilter: WebLoader\Filter\LessFilter
     jwlCssMinFilter: Joseki\Webloader\CssMinFilter
     cssMin: Joseki\Webloader\CssMinFilter
@@ -71,7 +71,6 @@ webloader:
             filters:
                 - @cssMin
             fileFilters:
-                - @lessFilter
                 - @wlCssFilter
             files:
                 - defaultPrint.css
@@ -83,7 +82,6 @@ webloader:
             filters:
                 - @cssMin
             fileFilters:
-                - @lessFilter
                 - @wlCssFilter
             files:
                 - fontawesome/css/all.min.css
@@ -99,6 +97,7 @@ webloader:
                 - default.css
                 #- forms.css
                 - %wwwDir%/js/jquery-ui.min.css
+                - %wwwDir%/js/jquery-ui.theme.min.css
     js:
         js:
             sourceDir: %wwwDir%/js 
@@ -113,6 +112,8 @@ webloader:
                 - extensions/scrollTo.ajax.js
                 #- history.ajax.js
                 - my.js
+                
+                
         jQuery:
             sourceDir: %wwwDir%/js 
             tempDir: %wwwDir%/webloader

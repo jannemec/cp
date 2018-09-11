@@ -1,0 +1,19 @@
+{block #header_tmpl}
+<style>
+    
+</style>
+
+
+<script type="text/javascript" src="{$baseUri}js/jstree.min.js"></script> 
+        
+<script type="text/javascript">
+$(function () {
+    $('#jstree_demo_div').jstree();
+});    
+</script>
+{/block}
+{block #content}
+<div class="pure-u-sm-24-24 main">
+    <div id="jstree_demo_div">{php $presenter->showCompanyTree($tree);}</div>
+</div>
+{/block}

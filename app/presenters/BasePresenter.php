@@ -150,10 +150,10 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
             $identity = $user->getIdentity();
             if ($identity instanceOf \Nette\Security\Identity) {
                 $data = $identity->getData();
-                return(isset($data['username']) ? ($data['username'] . '@otk.cz') : 'intranet@otk.cz');
+                return(isset($data['username']) ? ($data['username'] . '@casaleproject.cz') : 'intranet@casaleproject.cz');
             }
         }
-        return('intranet@otk.cz');
+        return('intranet@casaleproject.cz');
     }
     
     public function getUserPhone() {

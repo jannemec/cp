@@ -15,6 +15,7 @@ class AD extends Adldap {
     private static $cacheExpire = 3600;
     
     function __construct(array $options = [], \Nette\Caching\Cache $cache) {
+        //var_dump($options); exit;
         parent::__construct($options);
         $this->cache = $cache;
     }
@@ -62,7 +63,7 @@ class AD extends Adldap {
      * @return array
      */
     public function getUsers($all = false, $force = false) {
-        if (!$force && ($this->cache instanceOf \Nette\Caching\Cache) && ($this->cache->load('ad.users'))) {
+        if (true && (!$force && ($this->cache instanceOf \Nette\Caching\Cache) && ($this->cache->load('ad.users')))) {
             // existuje v cache
             $output = $this->cache->load('ad.users');
         } else {
@@ -75,7 +76,7 @@ class AD extends Adldap {
         }
         if (!$all && is_array($output)) {
             foreach($output as $key => $val) {
-                if ((substr($val['dn'], -24) != 'OU=OTK,DC=otk,DC=cz') && (substr($val['dn'], -19) != 'OU=OTK,DC=otk,DC=cz')) {
+                if ((substr($val['dn'], -27) != 'OU=CHPN users,DC=chpn,DC=cz') && (substr($val['dn'], -19) != 'OU=OTK,DC=otk,DC=cz')) {
                     unset($output[$key]);
                 }
             }
@@ -141,7 +142,7 @@ class AD extends Adldap {
         $tmp = $this->user()->all();
         $output = array();
         foreach($tmp as $user) {
-            if ($all || (isset($user['dn']) && strtoupper(substr($user['dn'], -19)) == 'OU=OTK,DC=OTK,DC=CZ')) {
+            if ($all || (isset($user['dn']) && strtoupper(substr($user['dn'], -19)) == 'OU=CHPN users,DC=chpn,DC=cz')) {
                 /*if ($user['samaccountname'] == 'u935') {
                     var_dump(intval($user['useraccountcontrol']));
                     echo (((intval($user['useraccountcontrol']) & 2) > 0) ? true : false);

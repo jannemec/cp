@@ -321,11 +321,11 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
     }
     
     protected function createComponentLoginForm() {
-        return(new \controls\LoginForm($this, 'loginForm'));
+        return(new \Controls\LoginForm($this, 'loginForm'));
     }
     
     protected function createComponentTopMenu() {
-        return(new \controls\TopMenu($this, 'topMenu'));
+        return(new \Controls\TopMenu($this, 'topMenu'));
     }
     
     public function handleSetParam(string $type, string $key, string $name, string $value) {

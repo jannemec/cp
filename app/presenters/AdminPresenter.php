@@ -41,27 +41,27 @@ class AdminPresenter extends BasePresenter {
     }
     
     protected function createComponentUserEditForm() {
-        return(new \Admin\UserEditForm($this));
+        return(new \Controls\Admin\UserEditForm($this));
     }
     
     protected function createComponentUserGroupForm() {
-        return(new \Admin\UserGroupForm($this));
+        return(new \Controls\Admin\UserGroupForm($this));
     }
     
     protected function createComponentRightEditForm() {
-        return(new \Admin\RightEditForm($this));
+        return(new \Controls\Admin\RightEditForm($this));
     }
 
     protected function createComponentRightGroupForm() {
-        return(new \Admin\RightGroupForm($this));
+        return(new \Controls\Admin\RightGroupForm($this));
     }
     
     protected function createComponentGroupEditForm() {
-        return(new \Admin\GroupEditForm($this));
+        return(new \Controls\Admin\GroupEditForm($this));
     }
     
     protected function createComponentLeftDirectory($name) {
-        return(new \AdminLeftDirectory($this, 'leftDirectory'));
+        return(new \Controls\AdminLeftDirectory($this, 'leftDirectory'));
     }
 
     public function beforeRender() {
@@ -267,7 +267,7 @@ class AdminPresenter extends BasePresenter {
     
     
     public function renderTest() {
-        $this->sharepointService->listSites();
+        $this->sharepointService->testOnly();
         
         
         

@@ -1,0 +1,11 @@
+<div class="ui-widget">
+    <div class="ui-widget-header"><a href="{$baseurl}">{_'Aktivní'} {_'projekty'}</a></div>
+    <div class="ui-widget-body">
+        <ul style="list-style-type: none; padding-left: 0px; font-size: 11pt;">
+            {foreach $docs as $doc}
+                <li> <i class="fa {if intval($doc->tm) < 10}fa-exclamation{else}fa-empty{/if}"></i> <strong><a href="{$doc->ProjektWebUpdate->Url}" title="{$doc->Title}">{$doc->N_x00e1_zev_x0020_projektu}</a></strong> {if isset($doc->Vedouc_x00ed__x0020_projektu)}({$doc->Vedouc_x00ed__x0020_projektu }){/if}</li>
+            {/foreach}
+        </ul>
+    </div>
+</div>
+

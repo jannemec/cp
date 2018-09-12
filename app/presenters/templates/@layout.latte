@@ -46,11 +46,7 @@ if (isset($header_text)) {
                     {if $presenter->getLang() != 'en'}
                     <li><a href="{$presenter->link('Home:setLang', array('lang' => 'en', 'backlink' => $presenter->name . ':' . $presenter->view))}">EN <img src="{$baseUri}images/gb.png" height="11" width="16" /></a></li>
                     {/if}
-                    {if $presenter->getLang() != 'de'}
-                    <li><a href="{$presenter->link('Home:setLang', array('lang' => 'de', 'backlink' => $presenter->name . ':' . $presenter->view))}">DE <img src="{$baseUri}images/de.png" height="11" width="16" /></a></li>
-                    {/if}
                 </ul>
-
                 {control loginForm}
             </div>
         </div>

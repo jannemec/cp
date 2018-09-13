@@ -216,7 +216,7 @@ a:hover {
     clear: right;
     list-style:none;
     margin: 0px 0;
-    padding: 0px 1px 0 10px;
+    padding: 6px 1px 0 10px;
 }
 
 #header ul.langs li {
@@ -239,7 +239,7 @@ a:hover {
     width: 16px;
     height: 11px;
     display: inline;
-    float: none;
+    /*float: none;*/
 }
 
 #header ul.langs li a {
@@ -288,11 +288,13 @@ span.loginformusername {
     color: navy;
     font-weight: bold;
     padding-top: 0.8ex;
+    padding-right: 0.5em;
     font-size: 75%;
 }
 form.loginform {
     float: right;
-    clear: right;
+    clear: none;
+    margin-right: 1em;
 }
 
 form.loginform fieldset {
@@ -346,7 +348,7 @@ div.widget_header {
     padding-top: 5px;
     padding-bottom: 5px;
     color : #FFFAF0;
-    font-size : 13;
+    font-size : 100%;
     font-weight : bolder;
     margin-top: 1ex;
 }
@@ -357,6 +359,7 @@ div.widget_body {
     padding-left: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
+    font-size: 75%
 }
 
 div.widget_footer {
@@ -366,7 +369,7 @@ div.widget_footer {
     padding-top: 5px;
     padding-bottom: 5px;
     color : #FFFAF0;
-    font-size : 13;
+    font-size : 100%;
     font-weight : bolder;
     margin-top: 0;
 }

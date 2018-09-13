@@ -1,0 +1,12 @@
+<div class="widget">
+    <div class="widget_header">{if $user->isAllowed('Admin')}<a href="{$baseurl}/Lists/WiFi/AllItems.aspx">WiFi</a>{else}WiFi{/if} {_'veřejné'}</div>
+    <div class="widget_body">
+        <ul style="list-style-type: none; padding-left: 0px; font-size: 11pt;">
+            {foreach $rows as $row}
+                {if (!isset($row->OnWeb) || $row->OnWeb)}
+                <li><strong>{$row->Title}</strong> {_'heslo'} (<b>{isset($row->Password) ? $row->Password : ''}</b>) {isset($row->Location) ? (' - ' . $row->Location) : ''}</li>
+                {/if}
+            {/foreach}
+        </ul>
+    </div>
+</div>

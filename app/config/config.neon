@@ -11,9 +11,16 @@ parameters:
     Framework:
         iAmUsingBadHost: false
         email: jan.nemec@casaleproject.cz
-    AD: 
+    AD:
+        controllers: 
+            1: 'prgdc11.chpn.cz'
+            2: 'prgdc12.chpn.cz'
+        base_dn: "DC=chpn,DC=cz"
+        account_suffix: ""
     SHAREPOINT:
-        url: 
+        url: "https://spgcz.sharepoint.com"
+        urlProjs: "/sites/projekty" 
+        urlIT: "/sites/ITPortal"
 
 latte:
     xhtml: TRUE
@@ -85,6 +92,7 @@ webloader:
             fileFilters:
                 - @wlCssFilter
             files:
+                - default.css
                 - fontawesome/css/all.min.css
                 - pure/base-min.css
                 - pure/base-context-min.css
@@ -95,7 +103,6 @@ webloader:
                 - pure/tables-min.css
                 - pure/buttons-min.css
                 - pure/buttons-core-min.css
-                - default.css
                 #- forms.css
                 - %wwwDir%/js/jquery-ui.min.css
                 - %wwwDir%/js/jquery-ui.theme.min.css

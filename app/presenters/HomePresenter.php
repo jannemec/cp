@@ -133,4 +133,8 @@ class HomePresenter extends BasePresenter {
     public function createComponentSharepointProjects() {
         return(new \Controls\Home\SharepointProjects($this, 'sharepointProjects', $this->sharepointService));
     }
+    
+    public function createComponentSharepointWifi() {
+        return(new \Controls\Home\SharepointWiFi($this, 'sharepointWifi', $this->sharepointService));
+    }
 }

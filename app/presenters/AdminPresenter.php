@@ -267,6 +267,8 @@ class AdminPresenter extends BasePresenter {
     
     
     public function renderTest() {
+        $this->sharepointService->getProjectSites();
+        
         $this->sharepointService->testOnly();
         
         

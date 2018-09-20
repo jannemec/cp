@@ -362,6 +362,15 @@ div.widget_body {
     font-size: 75%
 }
 
+div.widget_body ul {
+    margin: 0px;
+}
+
+div.widget_body_scroll {
+    overflow-x: hidden;
+    height: 30ex;
+}
+
 div.widget_footer {
     border: black 1px dotted;
     background-color: Silver;

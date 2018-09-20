@@ -13,28 +13,28 @@ namespace Controls\Home;
  *
  * @author u935
  */
-class SharepointWiFi extends \Nette\Application\UI\Control {
+class PhoneBook extends \Nette\Application\UI\Control {
     
-    /** @var \Model\Jannemec\Sharepoint */
-    private $sharePointService = null;
+    /** @var \Adldap\AD */
+    private $adService = null;
     
-    public function __construct($parent = null, $name = null, \Model\Jannemec\Sharepoint $sharePointService = null) {   
+    public function __construct($parent = null, $name = null, \Adldap\AD $adService = null) {   
         parent::__construct();
         $parent->addComponent($this, $name);
-        $this->sharePointService = $sharePointService;
+        $this->adService = $adService;
     }
     
     public function render() {
-        $this->template->setFile(dirname(__FILE__) . '/templates/SharepointWiFi.latte');
-        $out = $this->sharePointService->getWifis();
+        $this->template->setFile(dirname(__FILE__) . '/templates/PhoneBook.latte');
+        $out = $this->adService->getUsers(false);
         $this->template->rows = array();
         foreach($out as $row) {
             if ($row == 'No data returned.') {
                 break;
             }
+            //\Tracy\Debugger::dump($row); exit;
             $this->template->rows[] = $row;
         }
-        $this->template->baseurl = $this->sharePointService->getITUrl(false);
         $this->template->render();
     }
 }

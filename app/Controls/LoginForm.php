@@ -16,10 +16,11 @@ class LoginForm extends \Nette\Application\UI\Form {
 
     public function __construct($parent = null, $name = null) {
         //$this->translator = new GettextTranslator('techorder.' . $parent->getLang() . '.mo', $parent->getLang()); // druhý parametr je volitelný
+        parent::__construct();
         if (is_null($name)) {
             $name = 'loginForm';
         }
-        parent::__construct($parent, $name);
+        $parent->addComponent($this, $name);
         $this->getElementPrototype()->class('pure-form loginform');
         if ($parent->getUser()->isLoggedIn()) {
             $this->addGroup();

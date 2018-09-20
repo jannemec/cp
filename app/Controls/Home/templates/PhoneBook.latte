@@ -1,0 +1,70 @@
+<style>
+    table.phonebook {
+        width: 100%;
+    }
+    table.phonebook thead tr th {
+        text-align: center;
+        padding: 2px;
+    }
+    
+    table.phonebook tbody tr td {
+        padding: 2px;
+        font-size: 80%;
+    }
+    
+    input[type="text"].phone_filter {
+        padding: 2px;
+        color: black;
+        font-size: 80%;
+    }
+</style>
+<script type="text/javascript">
+$( function() {
+    $(".phone_filter").keyup(function() {
+        if ($(this).val() == '') {
+            $('#phonebook_tbody .all').show();
+        } else if($(this).val().length >= 2) {
+            $('#phonebook_tbody  .all').hide();
+            var val = $(this).val().toLowerCase();
+            // ověřit, jestli existuje
+            $rows = $('#phonebook_tbody ').children('tr').each(function(i) {
+                found = false;
+                $cols = $(this).children('td').each(function(j) {
+                    if ($(this).text().toLowerCase().indexOf(val) >= 0) {
+                        $(this).parent().show();
+                    }
+                });
+            });
+        } else {
+            $('.all').show();
+        }
+    });
+});
+</script>
+<div class="widget">
+    <div class="widget_header pure-form">{_'Telefonní seznam'} <input type="text" class="phone_filter pure-input-1-3" value="" /></div>
+    <div class="widget_body widget_body_scroll" style="padding: 0px;">
+        <table class="phonebook pure-table pure-table-horizontal">
+            <thead>
+                <tr>
+                    <th>{_'Jméno'}</th>
+                    <th>{_'Mobil'}</th>
+                    <th>{_'Tel'}</th>
+                    <th>{_'Email'}</th>
+                </tr>
+            </thead>
+            <tbody id="phonebook_tbody">
+                {php $i = 1;}
+                {foreach $rows as $row}
+                    <tr class="all{$i % 2 == 1 ? ' pure-table-odd' : ''}">
+                        <td>{$row['displayname']}</td>
+                        <td>{$row['mobile'] != $row['telephoneNumber'] ? $row['telephoneNumber'] : '&nbsp;'|noescape}</td>
+                        <td>{$row['mobile']}</td>
+                        <td>{if !empty($row['mail'])}<a href="mailto:{$row['mail']}">{$row['mail']}</a>{/if}</td>
+                    </tr>
+                    {php $i++;}
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>

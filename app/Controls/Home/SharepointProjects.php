@@ -11,7 +11,8 @@ class SharepointProjects extends \Nette\Application\UI\Control {
     
     /** @var \jannemec\Sharepoint */
     private $sharePointService = null;
-    public function __construct($parent = null, $name = null, \Model\Jannemec\Sharepoint $sharePointService) {   
+    
+    public function __construct($parent = null, $name = null, \Model\Jannemec\Sharepoint $sharePointService = null) {   
         parent::__construct();
         $parent->addComponent($this, $name);
         $this->sharePointService = $sharePointService;

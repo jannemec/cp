@@ -56,7 +56,101 @@ class ToolPresenter extends BasePresenter {
     
     
     
-    public function createComponentPhoneBook() {
-        return(new \Controls\Home\PhoneBook($this, 'phoneBook', $this->adService));
+    public function createComponentPhonesImport() {
+        $frm = new \Nette\Application\UI\Form($this, 'phonesImport');
+        $frm->getElementPrototype()->class('pure-form pure-form-aligned');
+        $frm->addGroup('Import dat');
+        $frm->addTextArea('data', 'Import', 40, 4)
+                ->setRequired(true);
+        
+        $frm->addGroup();
+        $frm->addSubmit('sbmt', 'IMPORT')->getControlPrototype()->class('button-xsmall pure-button');;
+        $frm['sbmt']->onClick([$this, 'phonesImportSubmitted']);
+        
+        $frm->onSuccess[] = [$this, 'phonesImportSubmitted'];
+        
+        $default = [];
+        $frm->setDefaults($default);
+        
+        $renderer = $frm->getRenderer();
+        $renderer->wrappers['controls']['container'] = null; //'dl';
+        $renderer->wrappers['pair']['container'] = 'div class=pure-control-group';
+        $renderer->wrappers['label']['container'] = null; //'dt';
+        $renderer->wrappers['control']['container'] = null; //'dd';
+        return($frm);
+    }
+    
+    public function phonesImportSubmitted(\Nette\Application\UI\Form $frm) {
+        if ($frm['sbmt']->isSubmittedBy()) {
+            // Import dat
+            $this->flashMessage('Data odeslána', 'info');
+            $data = $frm['data']->getvalue();
+            $users = $this->adService->getUsers(true, true);
+            /*foreach($users as $user) {
+                echo $user['displayname'] . '<br />';
+                if ($user['displayname'] == 'Sarmanova Michaela') {
+                    \Tracy\Debugger::dump($user);
+                }
+            }
+            exit;*/
+            foreach(explode("\n", $data) as $row) {
+                if (trim($row) != '') {
+                    $row = explode("\t", $row);
+                    if (count($row) > 2) {
+                        // Check the row
+                        $name = trim($row[0]);
+                        // Ořezání titulů
+                        $name = trim(strtr($name, ['Mgr.' => '', 'Ing.' => '', 'Bc.' => '', 'ing' => '', 'PH.D.' => '', 'DiS.' => '', 'PhD.' => '', 'Ph.D' => '', 'ing.' => '']), ' .,');
+                        // Přehození křestní - příjmení
+                        $name = explode(' ', $name);
+                        $tmp = array_shift($name);
+                        $name = trim(implode(' ', $name) . ' ' . $tmp);
+                        // Zrušení diakritiky
+                        $name2 = \Model\Jannemec\Tools::utf2ascii(strtr($name, ['ö' => 'o']));
+                        $name3 = strtr($name2, ['Internet ' => '', 'Martinek' => 'Martinek1']);
+                        $phone = trim($row[1]);
+                        if (substr($phone, 0, 3) == '420') {
+                            $phone = '+' . $phone;
+                            /*echo '++++' . $phone . '<br />';
+                        } else {
+                            echo '----' . $phone . '<br />';*/
+                        }
+                        $found = false;
+                        foreach($users as $key => $user) {
+                            //\Tracy\Debugger::dump($user); exit;
+                            if ((!isset($user['disabled']) || !$user['disabled']) && ((trim(strtr($user['mobile'], [' ' => ''])) == $phone)
+                                    || (trim(strtr($user['telephoneNumber'], [' ' => ''])) == $phone)
+                                    || (trim(strtr($user['homePhone'], [' ' => ''])) == $phone))) {
+                                $found = true;
+                                $users[$key]['OK'] = true;
+                                if (($user['displayname'] != $name) && ($user['displayname'] != $name2) && ($user['displayname'] != $name3)) {
+                                    $this->flashMessage('Nesouhlasí jméno AD ' . $user['displayname'] . '-' . $name . ' pro tel. ' . $phone, 'info');
+                                }
+                                break;
+                            }
+                        }
+                        if (!$found) {
+                            if (in_array(trim($row[4]), ['Minute-Rated Tariff 1.00 CZK', 'Fix Number User IP Phone 1.00 CZK', 'Fix Number User PSTN 1.00 CZK'])) {
+                                $this->flashMessage('Telefon ' . $phone . ' ' . $name . ' nenalezen v AD', 'info');
+                            } else {
+                                $this->flashMessage('Telefon ' . $phone . ' ' . $name . ' nenalezen v AD', 'error');
+                            }
+                        }
+                    }
+                }
+            }
+            foreach($users as $key => $user) {
+                if (!isset($user['OK']) && (($user['mobile'] != '') || ($user['telephoneNumber'] != ''))) {
+                    // Ještě výjimky
+                    if (!in_array($user['mobile'], ['+420 739461975'])
+                            && (!isset($user['disabled']) || !$user['disabled'])) {
+                        $this->flashMessage('Uživatel ' . $user['displayname'] . ' ' . $user['mobile'] . ' nemá tel. v dbf', 'error');
+                    }
+                }
+            }
+        } else {
+            // Chyba
+            $this->flashMessage('Data nebyla odeslána', 'error');
+        }
     }
 }

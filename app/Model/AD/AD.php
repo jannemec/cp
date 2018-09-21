@@ -139,8 +139,44 @@ class AD extends Adldap {
         if (!$this->getLdapBind()) {
             $this->connect();
         }
-        $tmp = $this->user()->all();
         $output = array();
+        
+        // Nejprve kontakty
+        if ($all) {
+            $tmp = $this->contact()->all();
+            foreach($tmp as $user) {
+                $output[$user['distinguishedname']]['displayname'] = isset($user['displayname']) ? $user['displayname'] : $user['cn'];
+                $output[$user['distinguishedname']]['samaccountname'] = $user['distinguishedname'];
+                $output[$user['distinguishedname']]['memberof'] = [];
+                $output[$user['distinguishedname']]['dn'] = $user['dn'];
+                $output[$user['distinguishedname']]['sn'] = isset($user['sn']) ? $user['sn'] : '';
+                $output[$user['distinguishedname']]['wWWHomePage'] = isset($user['wwwhomepage']) ? $user['wwwhomepage'] : '';
+                $output[$user['distinguishedname']]['streetAddress'] = isset($user['streetaddress']) ? $user['streetaddress'] : '';
+                $output[$user['distinguishedname']]['co'] = isset($user['co']) ? $user['co'] : '';
+                $output[$user['distinguishedname']]['postalCode'] = isset($user['postalcode']) ? $user['postalcode'] : '';
+                $output[$user['distinguishedname']]['l'] = isset($user['l']) ? $user['l'] : '';
+                $output[$user['distinguishedname']]['disabled'] = isset($user['useraccountcontrol']) ? (((intval($user['useraccountcontrol']) & 2) > 0) ? true : false) : false;
+                $output[$user['distinguishedname']]['givenName'] = isset($user['givenname']) ? $user['givenname'] : '';
+                $output[$user['distinguishedname']]['mobile'] = isset($user['mobile']) ? $user['mobile'] : '';
+                $output[$user['distinguishedname']]['mail'] = isset($user['mail']) ? $user['mail'] : '';
+                $output[$user['distinguishedname']]['physicalDeliveryOfficeName'] = isset($user['physicaldeliveryofficename']) ? $user['physicaldeliveryofficename'] : '';
+                $output[$user['distinguishedname']]['title'] = isset($user['title']) ? $user['title'] : '';
+                $output[$user['distinguishedname']]['department'] = isset($user['department']) ? $user['department'] : '';
+                $output[$user['distinguishedname']]['company'] = isset($user['company']) ? $user['company'] : '';
+                $output[$user['distinguishedname']]['telephoneNumber'] = isset($user['telephonenumber']) ? $user['telephonenumber'] : '';
+                $output[$user['distinguishedname']]['homePhone'] = isset($user['homephone']) ? $user['homephone'] : '';
+                $output[$user['distinguishedname']]['pager'] = isset($user['pager']) ? $user['pager'] : '';
+                $output[$user['distinguishedname']]['facsimileTelephoneNumber'] = isset($user['facsimiletelephonenumber']) ? $user['facsimiletelephonenumber'] : '';
+                $output[$user['distinguishedname']]['jpegPhoto'] = isset($user['jpegPhoto']) ? $user['jpegPhoto'] : '';
+                $output[$user['distinguishedname']]['thumbnailPhoto'] = isset($user['thumbnailphoto']) ? $user['thumbnailphoto'] : '';
+                $output[$user['distinguishedname']]['manager'] = isset($user['manager']) ? $user['manager'] : '';
+                $output[$user['distinguishedname']]['sub'] = [];
+            }
+        }
+        
+        //A následně uživatele
+        $tmp = $this->user()->all();
+        
         foreach($tmp as $user) {
             if ($all || (isset($user['dn']) && strtoupper(substr($user['dn'], -19)) == 'OU=CHPN users,DC=chpn,DC=cz')) {
                 /*if ($user['samaccountname'] == 'u935') {

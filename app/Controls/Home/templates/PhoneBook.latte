@@ -48,16 +48,16 @@ $( function() {
             <thead>
                 <tr>
                     <th>{_'Jméno'}</th>
-                    <th>{_'Mobil'}</th>
                     <th>{_'Tel'}</th>
+                    <th>{_'Mobil'}</th>
                     <th>{_'Email'}</th>
                 </tr>
             </thead>
             <tbody id="phonebook_tbody">
                 {php $i = 1;}
                 {foreach $rows as $row}
-                    <tr class="all{$i % 2 == 1 ? ' pure-table-odd' : ''}">
-                        <td>{$row['displayname']}</td>
+                    <tr style="{$row['company'] == 'CASALE PROJECT a.s.' ? 'font-weight: bold;' : ''|noescape}" class="all{$i % 2 == 1 ? ' pure-table-odd' : ''}">
+                        <td title="{$row['company'] == '' ? $row['dn'] : $row['company']}">{$row['displayname']}</td>
                         <td>{$row['mobile'] != $row['telephoneNumber'] ? $row['telephoneNumber'] : '&nbsp;'|noescape}</td>
                         <td>{$row['mobile']}</td>
                         <td>{if !empty($row['mail'])}<a href="mailto:{$row['mail']}">{$row['mail']}</a>{/if}</td>

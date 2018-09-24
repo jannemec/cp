@@ -1,0 +1,34 @@
+{block header_tmpl}
+{/block}
+
+{block content}
+<div class="pure-u-sm-24-24 main">
+    <h1 class="first_item">{_'Kontrola zaměstnanců OKBase'}</h1>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+            <tr>
+                <th>{_'Os.č.'}</th>
+                <th>{_'Jméno'}</th>
+                <th>{_'Příjmení'}</th>
+                <th>{_'Email'}</th>
+                <th>{_'Tel.'}</th>
+                <th>{_'Útvar'}</th>
+                <th>{_'Stav'}</th>
+        </thead>
+        <tbody>
+            {foreach $employees as $employee}
+                <tr>
+                    <td>{$employee->osoc}</td>
+                    <td>{$employee->jmeno}</td>
+                    <td>{$employee->prijmeni}</td>
+                    <td>{$employee->email}</td>
+                    <td>{$employee->telefon}</td>
+                    <td>{$employee->utvar}</td>
+                    <td>{$employee->status}</td>
+                </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    
+</div>
+{/block}

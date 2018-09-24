@@ -20,7 +20,16 @@ class ToolPresenter extends BasePresenter {
         $this->sharepointService = $sharepointService;
     }
 
+    /** @var \Model\OKBase */
+    protected $OKBaseService;
     
+    /**
+     * Inject sharepoint service
+     * @param \Model\OKBase
+     */
+    public function injectOKBaseService(\Model\OKBase $OKBaseService) {
+        $this->OKBaseService = $OKBaseService;
+    }
     
     
     
@@ -50,8 +59,6 @@ class ToolPresenter extends BasePresenter {
     public function renderPhonesImport() {
         $this->template->title = $this->translator->translate('Telefony') . ' ';
         $this->template->page_title = $this->translator->translate('Telefony');
-        
-        
     }
     
     
@@ -152,5 +159,35 @@ class ToolPresenter extends BasePresenter {
             // Chyba
             $this->flashMessage('Data nebyla odeslána', 'error');
         }
+    }
+    
+    
+    public function renderOKBase() {
+        $this->template->title = $this->translator->translate('OKBase zaměstnanci') . ' ';
+        $this->template->page_title = $this->translator->translate('OKBase zaměstnanci');
+        
+        $this->template->employees = [];
+        $this->template->users = $this->adService->getUsers();
+        foreach($this->OKBaseService->getEmployees() as $employee) {
+            foreach($this->template->users as $key => $user) {
+                //\Tracy\Debugger::dump($user); exit;
+                $employee->status = 'Not found';
+                if ((\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
+                        && (\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))) {
+                    // Uživatel nalezen
+                    $employee->status = '';
+                    if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
+                        $employee->status = 'Email: ' . $user['mail'];
+                    }
+                    if (($employee->telefon != strtr($user['telephoneNumber'], ['+420 ' => ''])) && ($employee->telefon != strtr($user['mobile'], ['+420 ' => '']))) {
+                        $employee->status = 'Tel: ' . $user['telephoneNumber'];
+                    }
+                    unset($this->template->users[$key]);
+                    break;
+                }
+            }
+            $this->template->employees[] = $employee;
+        };
+        
     }
 }

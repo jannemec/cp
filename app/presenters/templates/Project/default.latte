@@ -1,0 +1,37 @@
+{block header_tmpl}
+{/block}
+
+{block content}
+<div class="pure-u-sm-24-24 main">
+    <h1 class="first_item">{_'Projekty'}</h1>
+    
+    <table class="pure-table pure-table-bordered pure-table-striped">
+        <thead>
+            <tr>
+                <th>{_'Id'}</th>
+                <th>{_'Název'}</th>
+                <th>{_'Odpovědnost'}</th>
+                <th>{_'Stav'}</th>
+                <th>{_'Kontrakt'}</th>
+                <th>{_'Nákup'}</th>
+        </thead>
+        <tbody>
+            {foreach $projects as $project}
+                {php 
+                    $user = $infosService->getUser($project->userid);
+                    $username = $user ? $user->fullname : $project->usrid;
+                }
+                <tr>
+                    <td>{trim($project->phproj)}</td>
+                    <td title="{trim($project->phdesig2)}">{trim($project->phdesig1)}</td>
+                    <td title="{trim($project->userid)}">{trim($username)}</td>
+                    <td>{trim($project->phac)}</td>
+                    <td>{trim($project->phcontract)}</td>
+                    <td>{trim($project->phpursale)}</td>
+                </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    
+</div>
+{/block}

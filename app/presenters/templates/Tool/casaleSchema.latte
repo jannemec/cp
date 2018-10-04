@@ -1,0 +1,97 @@
+{block header_tmpl}
+<link rel="stylesheet" type="text/css" href="{$baseUri}bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+<!-- Use this css for that pretty checkboxes (https://github.com/paveljanda/happy) -->
+<link rel="stylesheet" type="text/css" href="{$baseUri}bower_components/happy/dist/happy.css">
+<link rel="stylesheet" type="text/css" href="{$baseUri}bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css">
+<link rel="stylesheet" type="text/css" href="{$baseUri}bower_components/ublaboo-datagrid/assets/dist/datagrid.css">
+
+<!-- Use this css for ajax spinners -->
+<link rel="stylesheet" type="text/css" href="{$baseUri}bower_components/ublaboo-datagrid/assets/dist/datagrid-spinners.css">
+
+<!-- Include this css when using FilterMultiSelect (silviomoreto.github.io/bootstrap-select) -->
+<!--<link rel="stylesheet" type="text/css" href="{$baseUri}bower_components/bootstrap-select/dist/css/bootstrap-select.css">-->
+
+
+<!-- Use this tiny js for that pretty checkboxes (https://github.com/paveljanda/happy) -->
+<script src="{$baseUri}bower_components/happy/dist/happy.js"></script>
+<script src="{$baseUri}bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+<script src="{$baseUri}bower_components/jquery-ui-sortable/jquery-ui-sortable.js"></script>
+<script src="{$baseUri}bower_components/ublaboo-datagrid/assets/dist/datagrid.js"></script>
+
+<!-- It is recommended to include this JS file with just a few bits. It refreshes URL on non ajax request -->
+<script src="{$baseUri}bower_components/ublaboo-datagrid/assets/dist/datagrid-instant-url-refresh.js"></script>
+
+<!-- Use this little extension for ajax spinners -->
+<script src="{$baseUri}bower_components/ublaboo-datagrid/assets/dist/datagrid-spinners.js"></script>
+
+<!-- Include bootstrap.js for proper behaviour of ColumnStatus -->
+<script src="{$baseUri}bower_components/bootstrap/dist/js/bootstrap.js"></script>
+
+<!-- Include bootstrap-select.js when using FilterMultiSelect (silviomoreto.github.io/bootstrap-select) -->
+<!-- <script src="{$baseUri}bower_components/bootstrap-select/dist/js/bootstrap-select.js"></script>-->
+
+
+<!-- Easy autocomplete -->
+<!-- JS file -->
+<script src="{$baseUri}bower_components/EasyAutocomplete/dist/jquery.easy-autocomplete.min.js"></script> 
+
+<!-- CSS file -->
+<link rel="stylesheet" href="{$baseUri}bower_components/EasyAutocomplete/dist/easy-autocomplete.min.css"> 
+
+<!-- Additional CSS Themes file - not required-->
+<link rel="stylesheet" href="{$baseUri}bower_components/EasyAutocomplete/dist/easy-autocomplete.themes.min.css"> 
+<!-- /Easy autocomplete -->
+
+<script type="text/javascript">
+var peopleOptions = {
+	data: [""{foreach $adUsers as $adUser}, "{$adUser['sn']|noescape} {$adUser['givenName']|noescape} {$adUser['pager']|noescape}"{/foreach}]
+        , list: {
+            match: {
+                enabled: true
+            }
+        }
+        , adjustWidth: false
+    };
+    
+$(function () {
+  $('img.position').click(function(e) {
+    var offset = $(this).offset();
+    var floor = $(this).attr('data-floor');
+    var x = Math.round(e.pageX - offset.left);
+    var y = Math.round(e.pageY - offset.top);
+    $('#position').html(' ' + floor + ": " + x + ", " + y);
+    $("#frm-officeSchemaDatagrid-filter-inline_edit-floor").val(floor);
+    $("#frm-officeSchemaDatagrid-filter-inline_edit-xloc").val(x);
+    $("#frm-officeSchemaDatagrid-filter-inline_edit-yloc").val(y);
+    $("#frm-officeSchemaDatagrid-filter-inline_add-floor").val(floor);
+    $("#frm-officeSchemaDatagrid-filter-inline_add-xloc").val(x);
+    $("#frm-officeSchemaDatagrid-filter-inline_add-yloc").val(y);
+  });
+});
+</script>
+{/block}
+
+{block content}
+<div class="pure-u-sm-24-24 main">
+    <h1 class="first_item">{_'Nastavení schéma kanceláří'}</h1>
+    
+    {control officeSchemaDatagrid}
+    
+    {snippet autoCompleteStartup}
+<script type="text/javascript">
+$(function () {
+    $("#frm-officeSchemaDatagrid-filter-inline_edit-personact").easyAutocomplete(peopleOptions);
+    $("#frm-officeSchemaDatagrid-filter-inline_edit-persondef").easyAutocomplete(peopleOptions);
+    $("#frm-officeSchemaDatagrid-filter-inline_add-personact").easyAutocomplete(peopleOptions);
+    $("#frm-officeSchemaDatagrid-filter-inline_add-persondef").easyAutocomplete(peopleOptions);
+});
+</script>
+    {/snippet}
+    <div class="info">Pozice: <span id="position"></span></div>
+    <img src="{$baseUri}images/floor_1.png" class="position" alt="1st floor" width="660" height="292" data-floor="1" /><br />
+    
+    <img src="{$baseUri}images/floor_2.png" class="position" alt="1st floor" width="1742" height="422" data-floor="2" />
+    
+</div>
+{/block}

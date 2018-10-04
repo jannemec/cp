@@ -29,6 +29,17 @@ class AdminPresenter extends BasePresenter {
         $this->userRightService = $userRightService;
     }
     
+    /** @var \Model\Infos */
+    protected $infosService;
+    
+    /**
+     * Inject infos service
+     * @param \Model\Infos
+     */
+    public function injectInfosService(\Model\Infos $infosService) {
+        $this->infosService = $infosService;
+    }
+    
     /**
      * functions runs before action or render method are taken 
      */
@@ -267,8 +278,66 @@ class AdminPresenter extends BasePresenter {
     
     
     public function renderTest() {
-        $this->sharepointService->getProjectSites();
         
+        
+        // Vytvoření nového projektu
+        $projects = $this->infosService->getProjects(false);
+        $counter = 100;
+        foreach($projects as $project) {
+            //\Tracy\Debugger:: dump($project);exit;
+            $shpProj = $this->sharepointService->getITProject(trim($project['phproj']));
+            if (empty($shpProj)) {
+                // Založení záznamu
+                $record = [
+                      'name' => trim($project->phdesig1)
+                    , 'description' => trim($project->phdesig2)
+                    , 'pid' => trim($project->phproj)
+                    , 'person' => trim($project->userid)
+                    , 'contract' => trim($project->phcontract)
+                ];
+                $out = $this->sharepointService->addITProject($record);
+                //\Tracy\Debugger::dump($out); exit;
+                $counter--;
+                if ($counter <= 0) {
+                    break;
+                }
+            } else {
+                // Konrola/aktualizace záznamu
+                $update = [];
+                if (trim($project->userid) != $shpProj->Person) {
+                    $update['Person'] = trim($project->userid);
+                }
+                if (trim($project->phdesig1) != $shpProj->Title) {
+                    $update['Title'] = trim($project->phdesig1);
+                }
+                if (trim($project->phdesig2) != $shpProj->Description) {
+                    $update['Description'] = trim($project->phdesig2);
+                }
+                if (trim($project->phcontract) != $shpProj->Contract) {
+                    $update['Contract'] = trim($project->phcontract);
+                }
+                if (!empty($update)) {
+                    //\Tracy\Debugger::dump($update); exit;
+                    $out = $this->sharepointService->updateITProject($shpProj, $update);
+                    $counter--;
+                    if ($counter <= 0) {
+                        break;
+                    }
+                }
+            }
+                
+            //\Tracy\Debugger:: dump($shpProj);exit;
+        }
+        
+        // Zobrazení projektů
+        $this->terminate();
+        $itProjects = $this->sharepointService->getITProjects();
+        \Tracy\debugger::dump($itProjects);
+        
+        
+        // Zobrazení všech subsite
+        $this->terminate();
+        $this->sharepointService->getProjectSites();
         $this->sharepointService->testOnly();
         
         

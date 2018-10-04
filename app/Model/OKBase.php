@@ -61,6 +61,20 @@ class OKBase {
     }
     
     //==========================================================================
+    protected static $namesExceptions = [
+          'Quirosova Muddova' => 'Quirosova'
+        , 'Martinek' => 'Martinek1'
+        , 'Vostatkova Janatova' => 'Vostatkova'
+        , 'Minasi' => 'Minasi2'
+    ];
+    
+    /**
+     * Exceptions in names - marriages, duplicates etc.
+     * @return array
+     */
+    public static function getNamesExceptions(): array {
+        return(self::$namesExceptions);
+    }
     
     /**
      * Return all active persons from the system

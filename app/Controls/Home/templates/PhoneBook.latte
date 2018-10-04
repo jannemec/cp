@@ -57,7 +57,7 @@ $( function() {
                 {php $i = 1;}
                 {foreach $rows as $row}
                     <tr style="{$row['company'] == 'CASALE PROJECT a.s.' ? 'font-weight: bold;' : ''|noescape}" class="all{$i % 2 == 1 ? ' pure-table-odd' : ''}">
-                        <td title="{$row['company'] == '' ? $row['dn'] : $row['company']}">{$row['displayname']}</td>
+                        <td title="{$row['company'] == '' ? $row['dn'] : $row['company']}"><a href="#" onclick="showLocation('{trim($row['displayname'] . ' ' . $row['pager'])|noescape}')">{$row['displayname']}</a></td>
                         <td>{$row['mobile'] != $row['telephoneNumber'] ? $row['telephoneNumber'] : '&nbsp;'|noescape}</td>
                         <td>{$row['mobile']}</td>
                         <td>{if !empty($row['mail'])}<a href="mailto:{$row['mail']}">{$row['mail']}</a>{/if}</td>

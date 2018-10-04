@@ -6,11 +6,11 @@ parameters:
     # Nastavení doby po kterou se drží oprávnění
     authorizatorCacheTimeout: 300
     mail:
-        to: jan.nemec@casaleproject.cz
-        from: jan.nemec@casaleproject.cz
+        to: jnemec@casaleproject.cz
+        from: jnemec@casaleproject.cz
     Framework:
         iAmUsingBadHost: false
-        email: jan.nemec@casaleproject.cz
+        email: jnemec@casaleproject.cz
     AD:
         controllers: 
             1: 'prgdc11.chpn.cz'
@@ -26,7 +26,7 @@ latte:
     xhtml: TRUE
 
 tracy:
-    email: jan.nemec@casaleproject.cz
+    email: jnemec@casaleproject.cz
     maxLength: 2500
 
 session:
@@ -58,6 +58,9 @@ services:
     nette.latteFactory:
         setup:
             - addFilter(null,[Model\Filters(),loader])
+    OKBase: \Model\OKBase(dbf: @OKBaseConnection, cache: @cache)
+    INFOS: \Model\Infos(dbf: @OKBaseConnection, cache: @cache)
+    soap: \jannemec\Soap(cache: @cache)
 
 extensions:
     webloader: WebLoader\Nette\Extension

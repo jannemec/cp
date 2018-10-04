@@ -38,7 +38,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
         return($this->adService);
     }
     
-    /** @var \\Adldap\AD */
+    /** @var \Adldap\AD */
     protected $adService;
 
     /**
@@ -247,7 +247,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
             // Zkusíme cli - pro cron
             if (!$this->getUser()->isLoggedIn()) {
                 $params = $this->getRequest()->getParameters();
-                if (isset($params['cliCode']) && (($params['cliCode'] == 'otk2016') || ($params['cliCode'] == 'api'))) {
+                if (isset($params['cliCode']) && (($params['cliCode'] == 'cp2018') || ($params['cliCode'] == 'api'))) {
                     $this->getUser()->login('cron', null);
                 }
             }

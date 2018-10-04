@@ -14,9 +14,11 @@
                 <th>{_'Tel.'}</th>
                 <th>{_'Útvar'}</th>
                 <th>{_'Stav'}</th>
+                <th>{_'Username'}</th>
         </thead>
         <tbody>
             {foreach $employees as $employee}
+                {if !empty($employee->status)}
                 <tr>
                     <td>{$employee->osoc}</td>
                     <td>{$employee->jmeno}</td>
@@ -24,8 +26,10 @@
                     <td>{$employee->email}</td>
                     <td>{$employee->telefon}</td>
                     <td>{$employee->utvar}</td>
-                    <td>{$employee->status}</td>
+                    <td>{$employee->status|noescape}</td>
+                    <td>{$employee->username}</td>
                 </tr>
+                {/if}
             {/foreach}
         </tbody>
     </table>

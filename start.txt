@@ -1,0 +1,52 @@
+@echo off
+
+:rsa
+  rem # Excluded users (items must be enclosed in colons and seperated by a colon too)
+  rem echo "::" | find /I ":%USERNAME%:"
+  rem if not errorlevel 1 goto end
+
+  rem # Excluded hosts (items must be enclosed in colons and seperated by a colon too)
+  rem echo "::" | find /I ":%COMPUTERNAME%:"
+  rem if not errorlevel 1 goto end
+
+  rem # Excluded hosts which name starts or ends with given string
+  rem echo ":%COMPUTERNAME%:" | find /I ":"
+  rem if not errorlevel 1 goto end
+
+  start \\chpn.cz\netlogon\ed\rsasrv.exe
+
+:hwsw
+  rem # Hosts excluded from HW/SW audit
+  rem echo "::" | find /I ":%COMPUTERNAME%:"
+  rem if not errorlevel 1 goto end
+
+:w9x
+  ver | find " 4." >NUL
+  if errorlevel 1 goto w2k
+  start \\chpn.cz\netlogon\ed\w9x\OCSInventory.exe /SERVER:10.132.102.19 /NP /NOTAG /UID
+  goto end
+
+:w2k
+  ver | find " 5.0" >NUL
+  if errorlevel 1 goto wxp
+  start \\chpn.cz\netlogon\ed\w2k\OCSInventory.exe /SERVER=http://10.132.102.19/ocsinventory /PROXY_TYPE=0 /NOTAG /UID /HKCU
+  goto localgroup
+
+:wxp
+  ver | find " 5.1" >NUL
+  if errorlevel 1 goto w7
+  start \\chpn.cz\netlogon\ed\wxp\OCSInventory.exe /SERVER=http://10.132.102.19/ocsinventory /PROXY_TYPE=0 /NOTAG /UID /HKCU
+  goto localgroup
+
+:w7
+  start \\chpn.cz\netlogon\ed\w7\OCSInventory.exe /SERVER=http://10.132.102.19/ocsinventory /PROXY_TYPE=0 /NOTAG /UID /HKCU
+  goto localgroup
+
+:localgroup
+  rem net localgroup | \\chpn.cz\netlogon\ed\ssed -n "s/^\*//p" > %TEMP%\localgroup
+  rem for /F "tokens=*" %%i IN (%TEMP%\localgroup) do net localgroup "%%i" | \\chpn.cz\netlogon\ed\ssed -rn "/^---*$/,/\.$/{/^--*$/d; /\.$/d; s/.*/%COMPUTERNAME%\t%DATE% %TIME%\t%%i\t&/p}" >> \\10.132.102.19\localgroup\%COMPUTERNAME%.csv
+  rem del %TEMP%\localgroup >NUL
+
+:end
+
+exit

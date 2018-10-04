@@ -1,0 +1,37 @@
+<div class="widget">
+    <div class="widget_header">{if $user->isAllowed('Admin')}<a href="{$baseurl}/Lists/HowTo/AllItems.aspx">IT HowTo</a>{else}IT HowTo{/if}</div>
+    <div class="widget_body">
+        <ul style="list-style-type: none; padding-left: 0px; font-size: 11pt;">
+            {foreach $rows as $row}
+                {if (!isset($row->OnWeb) || $row->OnWeb)}
+                    <li><strong><a n:href="getITHowToArticle $row->ID" class="ajax" onclick="showITHowTo(this)">{$row->Title}</a></strong></li>
+                {/if}
+            {/foreach}
+        </ul>
+    </div>
+</div>
+<div id="howto_dialog" title="IT HowTo">
+  <p>Wait for donwload</p>
+</div>
+<script type="text/javascript">
+    $( function() {
+        $( "#howto_dialog" ).dialog({
+              autoOpen: false
+            , height: 800
+            , width: 1000
+            , modal: true
+            , show: {
+                  effect: "blind"
+                , duration: 1000
+            }
+        });
+    });
+    function showITHowTo(obj) {
+        var url = $(obj).attr('href');//'{$presenter->link('getITHowToArticle', ['id' => '___id___'])|noescape}';
+        
+        $( "#howto_dialog" )
+                .load(url)
+                .dialog("open");
+        return(true);
+    }
+</script>

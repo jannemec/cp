@@ -210,6 +210,7 @@ class Tools {
     }
     
     public static function utf2ascii($str) {
+        $str = StrTr($str, ['ů' => 'u', 'ö' => 'o']);
         return(strtr(iconv("UTF-8", "ASCII//TRANSLIT", $str), array('\'' => '')));
         //$string=iconv('utf-8','windows-1250',$str);
         $win = "ěščřžýáíéťňďúůóöüäĚŠČŘŽÝÁÍÉŤŇĎÚŮÓÖÜËÄ\x97\x96\x91\x92\x84\x93\x94\xAB\xBB";

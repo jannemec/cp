@@ -27,13 +27,17 @@ class SysAuthenticator implements \Nette\Security\IAuthenticator {
             $domain = null;
         }
         $userList = $this->dbf->table('sys_user')->where('username = ?', $username);
-        if (count($userList) != 1 && is_null($domain)) { // uživatel nenalezen?
+        if ((count($userList) != 1) && is_null($domain)) { // uživatel nenalezen?
             throw new \Nette\Security\AuthenticationException("User '$username' not found.", self::IDENTITY_NOT_FOUND);
         } elseif (count($userList) != 1) {
             // Uživatel je ověřen proti doméně/LDAP, ale nemáme v dbf - nastavíme jako uživatele user
             $userList = $this->dbf->table('sys_user')->where('username = ?', 'user');
             $user = $userList->fetch();
-            $userArr = $user->toArray();
+            if ($user) {
+                $userArr = $user->toArray();
+            } else {
+                $userArr = [];
+            }
             $userArr['name'] = $username;
         } else {
             $user = $userList->fetch();

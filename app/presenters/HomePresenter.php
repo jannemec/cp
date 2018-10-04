@@ -29,13 +29,20 @@ class HomePresenter extends BasePresenter {
         $this->template->title = $this->translator->translate('CasaleProject - intranet ');
         $this->template->page_title = $this->translator->translate('Intranet');
         
-        /*$this->template->news = $this->toolsService->getNews(5);
-        
-        $this->template->nastenkaD = $this->toolsService->getNastenkaByType('D');
-        $this->template->nastenkaF = $this->toolsService->getNastenkaByType('F');
-        $this->template->nastenkaP = $this->toolsService->getNastenkaByType('P');
-        
-        $this->template->HR_pozice = $this->toolsService->getNastenkaByType('JOBS');*/
+        $this->template->officeMap = [];
+        $this->template->users = $this->adService->getUsers(false);
+        foreach($this->systemService->getOfficeSchemaDataSource() as $person) {
+            $person = $person->toArray();
+            $person['name'] = empty($person['personact']) ? $person['persondef'] : $person['personact'];
+            $person['txt'] = '<b>' . $person['name'] . '</b>';
+            foreach($this->template->users as $user) {
+                //var_dump($user); exit;
+                if (($person['name'] == $user['displayname']) || ($person['name'] == $user['displayname'] . ' ' . $user['pager'])) {
+                    $person['txt'] .= '<br />' . $user['title'] . '<br />' . $user['telephoneNumber'] . '<br />' . $user['mail'];
+                }
+            }
+            $this->template->officeMap[] = $person;
+        };
         
         if ($this->isAjax()) {
             $this->redrawControl();
@@ -136,6 +143,10 @@ class HomePresenter extends BasePresenter {
     
     public function createComponentSharepointWifi() {
         return(new \Controls\Home\SharepointWiFi($this, 'sharepointWifi', $this->sharepointService));
+    }
+    
+    public function createComponentSharepointItHowTo() {
+        return(new \Controls\Home\SharepointItHowTo($this, 'sharepointItHowTo', $this->sharepointService));
     }
     
     public function createComponentPhoneBook() {

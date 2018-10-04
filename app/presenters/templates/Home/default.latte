@@ -15,7 +15,99 @@
     </div>
     <div class="pure-u-sm-6-24">
         {control sharepointWifi}
+        
         {control phoneBook}
+        
+        {control sharepointItHowTo}
+    </div>
+    <div class="pure-u-sm-24-24" style="text-align: center;">
+        <h2>{_'1. patro'}</h2>
+        <img src="{$baseUri}images/floor_1.png" class="position" id="floor_1" alt="1st floor" width="660" height="292" usemap="#floor1" /><br />
+        
+        <h2>{_'2. patro'}</h2>
+        <img src="{$baseUri}images/floor_2.png" class="position" id="floor_2" alt="1st floor" width="1742" height="422" usemap="#floor2" />
+        
+        <map name="floor1">
+            {foreach $officeMap as $person}
+                {if $person['floor'] == 1}
+                    <area shape="circle" coords="{$person['xloc']},{$person['yloc']},15" href="#" class="ajax tooltip" title="{$person['txt']|noescape}" />
+                {/if}
+            {/foreach}
+        </map>
+        
+        <map name="floor2">
+            {foreach $officeMap as $person}
+                {if $person['floor'] == 2}
+                    <area shape="circle" coords="{$person['xloc']},{$person['yloc']},15" href="#" class="ajax tooltip" title="{$person['txt']|noescape}" />
+                {/if}
+            {/foreach}
+        </map>
+
+        <script type="text/javascript">
+            var peopleNames = new Array();
+            var peopleLocations = new Array();
+            {foreach $officeMap as $person}
+                peopleNames.push('{$person['name']|noescape}');
+                peopleLocations.push([{$person['floor']}, {$person['xloc']},{$person['yloc']}]);
+            {/foreach}
+                
+                function showLocation(name) {
+                    var i = peopleNames.indexOf(name);
+                    if (i >= 0) {
+                        var loc = peopleLocations[i];
+                        var img = null;
+                        if (loc[0] == 1) {
+                            img = $('#floor_1');
+                            $('#floor_1').show();
+                            $('#floor_2').hide();
+                        } else {
+                            img = $('#floor_2');
+                            $('#floor_1').hide();
+                            $('#floor_2').show();
+                        }
+                        var offset = img.offset();
+                        //alert(offset.top);
+                        var xloc = loc[1] - 25 + offset.left;
+                        var yloc = loc[2] - 25 + offset.top;
+                        //alert(xloc);
+                        $('html, body').animate({
+                            scrollTop: (offset.top)
+                        },500);
+                        $('#person_locator').show();
+                        $('#person_locator').css('position', 'absolute');
+                        $('#person_locator').css('z-index', '1000');
+                        //$('#person_locator').offset({ top: yloc, left: xloc });
+                        $('#person_locator').offset({ top: offset.top, left: offset.left });
+                        $('#person_locator').animate({
+                              top: yloc
+                            , left: xloc }, 1000);
+                        
+                        
+                        img.scrollTop();
+                        setTimeout(function(){
+                            $('#person_locator').hide();
+                            $('#floor_1').show();
+                            $('#floor_2').show();
+                        }, 10000);
+                    } else {
+                        $('#person_locator').hide();
+                        $('#floor_1').show();
+                        $('#floor_2').show();
+                        alert('Not found');
+                    }
+                }
+            
+            $( function() {
+                $('.tooltip').tooltip({
+                    track: true
+                    , content: function () {
+                            return $(this).prop('title');
+                        }
+                });
+            });
+        </script>
+        <img src="{$baseUri}images/target-transparent.png" hight="50" width="50" alt="{_'ZDE'}" id="person_locator" style="display:none" class="blink-image" />
+        
     </div>
 </div>
 {/block}

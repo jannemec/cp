@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2018-10-12 11:58+0200\n"
-"PO-Revision-Date: 2018-10-12 11:59+0200\n"
+"Project-Id-Version: Casale Project intranet\n"
+"POT-Creation-Date: 2018-10-12 13:52+0200\n"
+"PO-Revision-Date: 2018-10-12 14:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
@@ -15,6 +15,155 @@ msgstr ""
 "X-Poedit-SearchPath-0: app/presenters\n"
 "X-Poedit-SearchPath-1: app/Controls\n"
 "X-Poedit-SearchPath-2: temp/cache/latte\n"
+"X-Poedit-SearchPath-3: app/presenters/templates\n"
+
+#: app/Controls/TopMenu.php:24
+msgid "Úvod"
+msgstr "Intro"
+
+#: app/Controls/TopMenu.php:25
+msgid "Úvodní stránka"
+msgstr "Intro page"
+
+#: app/Controls/TopMenu.php:30 app/Controls/TopMenu.php:31
+msgid "Sharepoint Casale"
+msgstr "Sharepoint Casale"
+
+#: app/Controls/TopMenu.php:36 app/Controls/TopMenu.php:37
+msgid "Sharepoint Project Portal"
+msgstr "Sharepoint Project Portal"
+
+#: app/Controls/TopMenu.php:42
+msgid "OKbase"
+msgstr "OKbase"
+
+#: app/Controls/TopMenu.php:43
+msgid "Docházkový systém"
+msgstr "Docházkový systém"
+
+#: app/Controls/TopMenu.php:48 app/Controls/TopMenu.php:49
+msgid "IT Helpdesk"
+msgstr "IT Helpdesk"
+
+#: app/Controls/TopMenu.php:58
+msgid "Struktura firmy"
+msgstr "Company structure"
+
+#: app/Controls/TopMenu.php:59
+msgid "Firemní struktura"
+msgstr "Company structure"
+
+#: app/Controls/TopMenu.php:70 app/Controls/TopMenu.php:71
+msgid "Seznam projektů"
+msgstr "List of Projects"
+
+#: app/Controls/TopMenu.php:89
+msgid "Tools"
+msgstr "Tools"
+
+#: app/Controls/TopMenu.php:95
+msgid "Import telefonů"
+msgstr "Phones import"
+
+#: app/Controls/TopMenu.php:96
+msgid "Import telefonů Vodafone"
+msgstr "Vodafone import phones"
+
+#: app/Controls/TopMenu.php:100
+msgid "OKBase kontrola"
+msgstr "OKbase check"
+
+#: app/Controls/TopMenu.php:101
+msgid "Kontrola OKBase docházka"
+msgstr "Check OKBase personal system"
+
+#: app/Controls/TopMenu.php:105
+msgid "Schema kanceláří"
+msgstr "Office schema"
+
+#: app/Controls/TopMenu.php:106
+msgid "Zobrazení schématu kanceláří"
+msgstr "Show the office schema"
+
+#: app/Controls/TopMenu.php:110 app/Controls/TopMenu.php:111
+msgid "Aktualizace projektů"
+msgstr "Project refresh"
+
+#: app/Controls/TopMenu.php:115 app/Controls/TopMenu.php:116
+msgid "Aktualizace partnerů"
+msgstr "Partners refresh"
+
+#: app/Controls/TopMenu.php:120
+msgid "Čtečka karet - převod"
+msgstr "RFID reader - HEX"
+
+#: app/Controls/TopMenu.php:121
+msgid "Převod čísla na HEX"
+msgstr "Translate HEX number"
+
+#: app/Controls/TopMenu.php:139
+msgid "PHPInfo"
+msgstr "PHPInfo"
+
+#: app/Controls/TopMenu.php:140
+msgid "Informace o nastavení PHP"
+msgstr "PHP settings"
+
+#: app/Controls/TopMenu.php:144
+msgid "Nette Info"
+msgstr "Nette infos"
+
+#: app/Controls/TopMenu.php:145
+msgid "Informace o systému Nette"
+msgstr "Nette infos"
+
+#: app/Controls/TopMenu.php:149
+msgid "Uživatel"
+msgstr "User"
+
+#: app/Controls/TopMenu.php:150
+msgid "Informace o uživateli"
+msgstr "User account info"
+
+#: app/Controls/TopMenu.php:154
+msgid "Uživatelé"
+msgstr "Users"
+
+#: app/Controls/TopMenu.php:155
+msgid "Administrace uživatelů"
+msgstr "Users administration"
+
+#: app/Controls/TopMenu.php:159
+msgid "Roles/skupiny"
+msgstr "Roles/Groups"
+
+#: app/Controls/TopMenu.php:160
+msgid "Administrace rolí"
+msgstr "Roles administration"
+
+#: app/Controls/TopMenu.php:164
+msgid "Rights/zdroje"
+msgstr "Rights/sources"
+
+#: app/Controls/TopMenu.php:165
+msgid "Administrace zdrojů"
+msgstr ""
+
+#: app/Controls/TopMenu.php:169
+msgid "PHPMyAdmin"
+msgstr "PHPMyyAdmin"
+
+#: app/Controls/TopMenu.php:170
+msgid "MySQL database administrace"
+msgstr "MySQL dbf administration"
+
+#: app/Controls/TopMenu.php:179
+msgid "!!TEST"
+msgstr "!! TEST"
+
+#: app/Controls/TopMenu.php:180
+msgid "Only for Admin testing"
+msgstr "Only for admin testing"
 
 #: temp/cache/latte/Home-templates-PhoneBook.latte--3888c3b636.php:59
 msgid "Telefonní seznam"
@@ -44,7 +193,7 @@ msgstr "Active"
 #: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:19
 #: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:23
 msgid "projekty"
-msgstr "Projects"
+msgstr "projects"
 
 #: temp/cache/latte/Home-templates-SharepointWiFi.latte--c5382efdc4.php:23
 msgid "veřejné"
@@ -66,6 +215,6 @@ msgstr "1st Floor"
 msgid "2. patro"
 msgstr "2nd Floor"
 
-#: temp/cache/latte/templates-Home-default.latte--02194aaa96.php:194
+#: temp/cache/latte/templates-Home-default.latte--02194aaa96.php:195
 msgid "ZDE"
 msgstr "HERE"

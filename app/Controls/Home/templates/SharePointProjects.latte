@@ -4,9 +4,13 @@
         <ul style="list-style-type: none; padding-left: 0px;">
             {foreach $docs as $doc}
                 {if $presenter->getUser()->isLoggedIn()}
-                <li><i class="far {if intval($doc->tm) < 10}fa-file-alt{else}fa-file{/if}"></i> <strong><a href="{$doc->ProjektWebUpdate->Url}" title="{$doc->Title}">{$doc->Title}</a></strong> {$doc->N_x00e1_zev_x0020_projektu}{if isset($doc->Vedouc_x00ed__x0020_projektu)}({$doc->Vedouc_x00ed__x0020_projektu }){/if}</li>
+                    {if !is_null($doc->SiteLink)}
+                <li><i class="far {if intval($doc->tm) < 10}fa-file-alt{else}fa-file{/if}"></i> <strong><a href="{$doc->SiteLink->Url}" title="{$doc->Title}">{$doc->IDP}</a></strong> {$doc->Title}{if isset($doc->Person)}({$doc->Person}){/if}</li>
+                    {else}
+                <li><i class="far {if intval($doc->tm) < 10}fa-file-alt{else}fa-file{/if}"></i> <strong>{$doc->IDP}</strong> {$doc->Title}{if isset($doc->Person)}({$doc->Person}){/if}</li>
+                    {/if}
                 {else}
-                <li><i class="far {if intval($doc->tm) < 10}fa-file-alt{else}fa-file{/if}"></i> <strong>{$doc->Title}</strong> {$doc->N_x00e1_zev_x0020_projektu}{if isset($doc->Vedouc_x00ed__x0020_projektu)}({$doc->Vedouc_x00ed__x0020_projektu }){/if}</li>
+                <li><i class="far {if intval($doc->tm) < 10}fa-file-alt{else}fa-file{/if}"></i> <strong>{$doc->IDP}</strong> {$doc->Title}{if isset($doc->Person)}({$doc->Person}){/if}</li>
                 {/if}
             {/foreach}
         </ul>

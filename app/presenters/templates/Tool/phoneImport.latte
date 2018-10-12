@@ -5,5 +5,11 @@
 <div class="pure-u-sm-24-24 main">
     <h1 class="first_item">Import telefonů</h1>
     {control phonesImport}
+    <p class="note">Vložte zkopírovaný text z exportu stránky Vodafone -&gt; <a href="https://onenetsamoobsluha.vodafone.cz/onsc/services/voice/voice-tariff">voice tariff</a>.</p>
+    
+    {if isset($helpdeskOut) && !empty($helpdeskOut)}
+        <a href="{$helpdeskLink|noescape}">download csv</a>
+        <pre class="alert">{$helpdeskOut|noescape}</pre>
+    {/if}
 </div>
 {/block}

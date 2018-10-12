@@ -7,13 +7,16 @@ rem Kontrola plátců DPH - VAT
 rem Import projektů INFOs -> Sharepoint
 "C:\Program Files\PHP\v7.2\php.exe" "c:\websrv\cp\index.php" "Cron:importInfosProjects" --verbose -cliCode "cp2018"
 
+rem Import dodavatelů INFOs -> Sharepoint
+"C:\Program Files\PHP\v7.2\php.exe" "c:\websrv\cp\index.php" "Cron:importInfosVendors" --verbose -cliCode "cp2018"
+
 
 
 rem ============================================================================
 rem a uložení log filu podle data
-ren "c:\websrv\cp\log\info.log" "info-%date:~1,10%.log"
-ren "c:\websrv\cp\log\cron\info.log" "info-%date:~1,10%.log"
-rem ren "c:\websrv\cp\log\api\info.log" "info-%date:~1,10%.log"
+ren "c:\websrv\cp\log\info.log" "info-%date:~0,10%.log"
+ren "c:\websrv\cp\log\cron\info.log" "info-%date:~0,10%.log"
+rem ren "c:\websrv\cp\log\api\info.log" "info-%date:~0,10%.log"
 
 rem ============================================================================
 rem a smažeme soubory email-sent

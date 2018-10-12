@@ -78,17 +78,18 @@
                         $('#person_locator').css('z-index', '1000');
                         //$('#person_locator').offset({ top: yloc, left: xloc });
                         $('#person_locator').offset({ top: offset.top, left: offset.left });
+                        $('#person_locator').removeClass('blink-image');
                         $('#person_locator').animate({
                               top: yloc
-                            , left: xloc }, 1000);
-                        
-                        
+                            , left: xloc }, 3000, function () {
+                                $('#person_locator').addClass('blink-image')
+                            });
                         img.scrollTop();
                         setTimeout(function(){
                             $('#person_locator').hide();
                             $('#floor_1').show();
                             $('#floor_2').show();
-                        }, 10000);
+                        }, 15000);
                     } else {
                         $('#person_locator').hide();
                         $('#floor_1').show();

@@ -1,0 +1,44 @@
+{block header_tmpl}
+<script type="text/javascript">
+$( function() {
+    $(".card").bind("change", calculate);
+});
+
+var calculate = function() {
+    var inp = $('#card_input').val();
+    
+    
+    for(var i = 1; i <= 20; i++) {
+        inp = inp.replace('+', '1');
+        inp = inp.replace('ě', '2');
+        inp = inp.replace('š', '3');
+        inp = inp.replace('č', '4');
+        inp = inp.replace('ř', '5');
+        inp = inp.replace('ž', '6');
+        inp = inp.replace('ý', '7');
+        inp = inp.replace('á', '8');
+        inp = inp.replace('í', '9');
+        inp = inp.replace('é', '0');
+    }
+    
+    var dval = parseInt(inp);
+    var outval = dval.toString(16);
+    
+    $('#result').html('Card number: ' + dval + ', OKBASE Value: ' + outval.substring(6,8) + outval.substring(4,6) + outval.substring(2,4) + outval.substring(0,2));
+};
+
+
+</script>
+{/block}
+
+{block content}
+<div class="pure-u-sm-24-24 main">
+    <h1 class="first_item">{_'Cards'}</h1>
+    
+    
+    <input type="text" class="card" id="card_input" />
+    
+    <div class='info info-border' id='result'></div>
+    
+</div>
+{/block}

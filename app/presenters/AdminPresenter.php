@@ -278,11 +278,75 @@ class AdminPresenter extends BasePresenter {
     
     
     public function renderTest() {
+
+        // Users example
+        $this->sharepointService->getSiteUsers();
+        exit;
         
+        /*$itVendors = $this->sharepointService->getITVendors();
+        \Tracy\debugger::dump($itVendors);
+        $this->terminate();*/
+        
+        // Konmtrola dodavatelů
+        $vendors = $this->infosService->getCompanies(false);
+        $counter = 10;
+        foreach($vendors as $vendor) {
+            //\Tracy\Debugger:: dump($vendor);exit;
+            $shpVendor = $this->sharepointService->getITVendor(trim($vendor->zeme) . trim($vendor->ico));
+            if (empty($shpVendor)) {
+                // Založení záznamu
+                $record = [
+                      'title' => trim($vendor->nazev)
+                    , 'abbreviation' => trim($vendor->przkrat)
+                    , 'idv' => trim($vendor->zeme) . trim($vendor->ico)
+                    , 'country' => trim($vendor->zeme)
+                    , 'vat' => trim($vendor->platdan)
+                ];
+                $out = $this->sharepointService->addITVendor($record);
+                //\Tracy\Debugger::dump($out); exit;
+                $counter--;
+                if ($counter <= 0) {
+                    break;
+                }
+            } else {
+                // Konrola/aktualizace záznamu
+                $update = [];
+                if (trim($vendor->przkrat) != $shpVendor->Abbreviation) {
+                    $update['Abbreviation'] = trim($vendor->przkrat);
+                }
+                if (trim($vendor->nazev) != $shpVendor->Title) {
+                    $update['Title'] = trim($vendor->nazev);
+                }
+                if (trim($vendor->zeme) != $shpVendor->Country) {
+                    $update['Description'] = trim($vendor->zeme);
+                }
+                if (trim($vendor->platdan) != $shpVendor->VAT) {
+                    $update['VAT'] = trim($vendor->platdan);
+                }
+                
+                if (!empty($update)) {
+                    
+                    $out = $this->sharepointService->updateITVendor($shpVendor, $update);
+                    //\Tracy\Debugger::dump($out);
+                    //\Tracy\Debugger::dump($update);
+                    //\Tracy\Debugger::dump($shpProj); exit;
+                    $counter--;
+                    if ($counter <= 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Zobrazení dodavatele/partnera
+        $this->terminate();
+        $itVendors = $this->sharepointService->getITVendors();
+        \Tracy\debugger::dump($itVendors);
+        $this->terminate();
         
         // Vytvoření nového projektu
         $projects = $this->infosService->getProjects(false);
-        $counter = 100;
+        $counter = 1000;
         foreach($projects as $project) {
             //\Tracy\Debugger:: dump($project);exit;
             $shpProj = $this->sharepointService->getITProject(trim($project['phproj']));
@@ -294,6 +358,7 @@ class AdminPresenter extends BasePresenter {
                     , 'pid' => trim($project->phproj)
                     , 'person' => trim($project->userid)
                     , 'contract' => trim($project->phcontract)
+                    , 'status' => trim($project->phtk) == 'Y' ? 'Active' : 'Closed'
                 ];
                 $out = $this->sharepointService->addITProject($record);
                 //\Tracy\Debugger::dump($out); exit;
@@ -316,9 +381,18 @@ class AdminPresenter extends BasePresenter {
                 if (trim($project->phcontract) != $shpProj->Contract) {
                     $update['Contract'] = trim($project->phcontract);
                 }
+                //var_dump([$project->phtk, $shpProj->Status]); exit;
+                if (trim($project->phtk) == 'Y' && in_array($shpProj->Status, ['Closed', 'Canceled', 'Preparation'])) {
+                    $update['Status'] = 'Active';
+                } elseif (trim($project->phtk) != 'Y' && in_array($shpProj->Status, ['Active', 'Preparation'])) {
+                    $update['Status'] = 'Closed';
+                }
                 if (!empty($update)) {
-                    //\Tracy\Debugger::dump($update); exit;
+                    
                     $out = $this->sharepointService->updateITProject($shpProj, $update);
+                    //\Tracy\Debugger::dump($out);
+                    //\Tracy\Debugger::dump($update);
+                    //\Tracy\Debugger::dump($shpProj); exit;
                     $counter--;
                     if ($counter <= 0) {
                         break;

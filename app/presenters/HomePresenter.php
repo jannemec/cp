@@ -58,7 +58,7 @@ class HomePresenter extends BasePresenter {
         $this->template->title = $this->translator->translate('Struktura firmy ');
         $this->template->page_title = $this->translator->translate('Struktura firmy ');
         
-        $users = $this->adService->getUsers(false, true);
+        $users = $this->adService->getUsers(true, true);
         $this->template->allUsers = $users;
         //\Tracy\Debugger::dump($users); exit;
         $this->template->tree = $this->createTree($users, '');

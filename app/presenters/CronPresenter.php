@@ -355,7 +355,7 @@ class CronPresenter extends BasePresenter {
                     $uname = strtr($firm->nazev, ['  ' => ' ']);
                     $uname = strtr($uname, ['  ' => ' ']);
                     if (trim($name) != trim($uname)) {
-                        $warrnings[$key] = ' VAT ' . trim($firm->platdan) . ' název <b style="white-space: pre;">-' . trim(mb_substr($firm->nazev, 0, 36, 'UTF-8')) . '-</b> neodpovídá - dle rejstříku <b style="white-space: pre;">-' . $cmp->name . '-</b> ' . trim($firm->ico) . ' ' . $firm->chgdat;
+                        $warrnings[$key] = ' VAT ' . trim($firm->platdan) . ' název <b style="white-space: pre;">-' . trim($firm->nazev) . '-</b> neodpovídá - dle rejstříku <b style="white-space: pre;">-' . $cmp->name . '-</b> ' . trim($firm->ico) . ' ' . $firm->chgdat;
                     }
                     //var_dump($warrnings);exit;
                 }       
@@ -385,37 +385,184 @@ class CronPresenter extends BasePresenter {
     public function actionImportInfosProjects() {
         \Tracy\Debugger::log('CRON task: ' . date('YmdHis') . ' ' . $this->getView(), \Tracy\Debugger::INFO);
         $projects = $this->infosService->getProjects(false);
+        $counter = 5000;
+        
+        $sites = [];
+        foreach($this->sharepointService->getProjectSites() as $site) {
+            $tmp = explode('/', $url = trim($site->Url));
+            $project = array_pop($tmp);
+            $project = trim($project);
+            $obj = new \stdClass();
+            $obj->Url = $url;
+            $obj->Description = $project;
+            $sites[$project] = $obj;
+        }
+        
         foreach($projects as $project) {
-            //\Tracy\Debugger:: dump($project);exit;
-            $shpProj = $this->sharepointService->getITProject(trim($project['phproj']));
-            if (empty($shpProj)) {
+            if (true || (trim($project->phpursale) == '0D0030C')) {
+                //\Tracy\Debugger:: dump($project);exit;
+                // If the change is older one month, quit
+                $dt = new \DateTime($project->chgtim);;
+                //\Tracy\Debugger::dump($dt->getTimestamp());exit;
+                if ($dt->getTimestamp() < time() - 30 * 24 * 3600) {
+                    break;
+                }
+                //var_dump([$dt->getTimestamp(), time() - 30 * 24 * 3600]); exit;
+                $shpProj = $this->sharepointService->getITProject(trim($project['phpursale']));
+                // Dohledání názvu projektu - aktuální/pokud je prázdný, tak sebe sama ...
+                if (empty($project->phpursaleup)) {
+                    $parent = null;
+                    $projname = trim($project->phproj);
+                } else {
+                    $parentProject = $this->sharepointService->getITProject(trim($project['phpursaleup']));
+                    if ($parentProject) {
+                        $parent = $parentProject->Id;
+                        $projname = trim($project->phproj);
+                    } else {
+                        $parent = null;
+                        $projname = trim($project->phproj);
+                    }
+                }
+                // Dohledání jména osoby
+                $personName = $this->infosService->getUser($project->userid);
+                if ($personName) {
+                    $personName = trim($personName->userfull);
+                } else {
+                    $personName = trim($project->userid);
+                }
+                // Dohledání oboru
+                $obor = $this->infosService->getMarketSegment(is_null($project->stcode) ? '' : $project->stcode);
+                if (!$obor) {
+                    $obor = trim($project->stcode);
+                }
+                // Dohledání site
+                $site = isset($sites[trim($project['phpursale'])]) ? $sites[trim($project['phpursale'])] : null;
+                
+                if (empty($shpProj)) {
+                    // Založení záznamu
+                    $record = [
+                          'name' => trim($project->phdesig1)
+                        , 'description' => trim($project->phdesig2)
+                        , 'pid' => trim($project->phpursale)
+                        , 'person' => $personName
+                        , 'project' => trim($projname)
+                        , 'parent' => $parent
+                        , 'person' => trim($project->userid)
+                        , 'contract' => trim($project->phcontract)
+                        , 'status' => trim($project->phtk) == 'Y' ? 'Active' : 'Closed'
+                        , 'product' => trim($project->dpdruh2)
+                        , 'obor' => $obor
+                        , 'sitelink' => $site
+                    ];
+                    $out = $this->sharepointService->addITProject($record);
+                    $counter--;
+                    if ($counter <= 0) {
+                        break;
+                    }
+                } else {
+                    // Konrola/aktualizace záznamu
+                    $update = [];
+                    if (is_null($site) && !is_null($shpProj->SiteLink)) {
+                        $update['SiteLink'] = $site;
+                    } elseif (is_null($shpProj->SiteLink) && !is_null($site)) {
+                        $update['SiteLink'] = $site;
+                    } elseif (is_null($site) && is_null($shpProj->SiteLink)) {
+                        // Do nothing
+                    } elseif (trim($site->Url) != trim($shpProj->SiteLink->Url)) {
+                        $update['SiteLink'] = $site;
+                    }
+                    if (trim($obor) != $shpProj->Obor) {
+                        $update['Obor'] = $obor;
+                    }
+                    if (trim($project->dpdruh2) != $shpProj->Product) {
+                        $update['Product'] = trim($project->dpdruh2);
+                    }
+                    if (trim($projname) != $shpProj->Project) {
+                        $update['Project'] = trim($projname);
+                    }
+                    if ($personName != $shpProj->Person) {
+                        $update['Person'] = $personName;
+                    }
+                    if (trim($project->phdesig1) != $shpProj->Title) {
+                        $update['Title'] = trim($project->phdesig1);
+                    }
+                    if (trim($project->phdesig2) != $shpProj->Description) {
+                        $update['Description'] = trim($project->phdesig2);
+                    }
+                    if (trim($project->phcontract) != $shpProj->Contract) {
+                        $update['Contract'] = trim($project->phcontract);
+                    }
+                    //var_dump([$project->phtk, $shpProj->Status]); exit;
+                    if (trim($project->phtk) == 'Y' && in_array($shpProj->Status, ['Closed', 'Canceled', 'Preparation'])) {
+                        $update['Status'] = 'Active';
+                    } elseif (trim($project->phtk) != 'Y' && in_array($shpProj->Status, ['Active', 'Preparation'])) {
+                        $update['Status'] = 'Closed';
+                    }
+                    if (!empty($update)) {
+                        /*\Tracy\Debugger::dump($shpProj);
+                        \Tracy\Debugger::dump($project);
+                        var_dump($update); exit;*/
+                        $out = $this->sharepointService->updateITProject($shpProj, $update);
+                        $counter--;
+                        if ($counter <= 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        \Tracy\Debugger::log('CRON task end:   ' . date('YmdHis') . ' ' . $this->getView(), \Tracy\Debugger::INFO);
+        $this->terminate();
+    }
+    
+    public function actionImportInfosVendors() {
+        \Tracy\Debugger::log('CRON task: ' . date('YmdHis') . ' ' . $this->getView(), \Tracy\Debugger::INFO);
+        $vendors = $this->infosService->getCompanies(false);
+        $counter = 5000;
+        foreach($vendors as $vendor) {
+            //\Tracy\Debugger:: dump($vendor);exit;
+            $shpVendor = $this->sharepointService->getITVendor(trim($vendor->zeme) . trim($vendor->ico));
+            if (empty($shpVendor)) {
                 // Založení záznamu
                 $record = [
-                      'name' => trim($project->phdesig1)
-                    , 'description' => trim($project->phdesig2)
-                    , 'pid' => trim($project->phproj)
-                    , 'person' => trim($project->userid)
-                    , 'contract' => trim($project->phcontract)
+                      'title' => trim($vendor->nazev)
+                    , 'abbreviation' => trim($vendor->przkrat)
+                    , 'idv' => trim($vendor->zeme) . trim($vendor->ico)
+                    , 'country' => trim($vendor->zeme)
+                    , 'vat' => trim($vendor->platdan)
                 ];
-                $out = $this->sharepointService->addITProject($record);
+                $out = $this->sharepointService->addITVendor($record);
+                //\Tracy\Debugger::dump($out); exit;
+                $counter--;
+                if ($counter <= 0) {
+                    break;
+                }
             } else {
                 // Konrola/aktualizace záznamu
                 $update = [];
-                if (trim($project->userid) != $shpProj->Person) {
-                    $update['Person'] = trim($project->userid);
+                if (trim($vendor->przkrat) != $shpVendor->Abbreviation) {
+                    $update['Abbreviation'] = trim($vendor->przkrat);
                 }
-                if (trim($project->phdesig1) != $shpProj->Title) {
-                    $update['Title'] = trim($project->phdesig1);
+                if (trim($vendor->nazev) != $shpVendor->Title) {
+                    $update['Title'] = trim($vendor->nazev);
                 }
-                if (trim($project->phdesig2) != $shpProj->Description) {
-                    $update['Description'] = trim($project->phdesig2);
+                if (trim($vendor->zeme) != $shpVendor->Country) {
+                    $update['Country'] = trim($vendor->zeme);
                 }
-                if (trim($project->phcontract) != $shpProj->Contract) {
-                    $update['Contract'] = trim($project->phcontract);
+                if (trim($vendor->platdan) != $shpVendor->VAT) {
+                    $update['VAT'] = trim($vendor->platdan);
                 }
+                
                 if (!empty($update)) {
-                    //\Tracy\Debugger::dump($update); exit;
-                    $out = $this->sharepointService->updateITProject($shpProj, $update);
+                    
+                    $out = $this->sharepointService->updateITVendor($shpVendor, $update);
+                    //\Tracy\Debugger::dump($out);
+                    //\Tracy\Debugger::dump($update);
+                    //\Tracy\Debugger::dump($shpProj); exit;
+                    $counter--;
+                    if ($counter <= 0) {
+                        break;
+                    }
                 }
             }
         }

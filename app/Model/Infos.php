@@ -66,15 +66,21 @@ class Infos {
      * @param bool $onlyActive
      * @return array
      */
-    public function getProjects(bool $onlyActive = true) : array {
-        $out = $this->getDbf()->select('phproj, phpursale, phcontract, phacsta, phacfin, userid, phdesig1, phdesig2, phdesig3, phac, phtk')
+    public function getProjects(bool $onlyActive = true, bool $byDate = false) : array {
+        $out = $this->getDbf()->select('phproj, phpursale, phpursaleup, phcontract, phacsta, phacfin, userid, phdesig1, phdesig2, phdesig3, phac, phtk, chgtim, tproj, stcode, dpdruh2')
                 ->from('pcprojh with (nolock)')
                 ->where('1=1')
+                    ->and('subj=%s', '03')
+                    //->and('phpursale=phproj')
                 ;
         if ($onlyActive) {
             $out = $out->and('phtk=%s', 'Y');
         }
-        return($out->orderBy('phproj')->fetchAll());
+        if ($byDate) {
+            return($out->orderBy('chgtim desc')->fetchAll());
+        } else {
+            return($out->orderBy('phproj')->fetchAll());
+        }
     }
     
     public function getUsers(bool $onlyActive = true) : array {
@@ -86,6 +92,54 @@ class Infos {
             $out = $out->and('plat=%s', 'A');
         }
         return($out->orderBy('userid')->fetchAll());
+    }
+    
+    /**
+     * 
+     * @param string $tproj
+     * @return string
+     */
+    public function getProjectType(string $tproj) : string {
+        $out = null;
+        if ($out = $this->getCacheKey('infos_projecttype_' . $tproj)) {
+            
+        } else {
+            $out = $this->getDbf()->select('tptext2')
+                    ->from('kmprojtyp with (nolock)')
+                    ->where('subj=%s', '03')
+                    ->and('tproj=%s', $tproj)
+                    ->orderBy('tproj')
+                    ->fetchSingle();
+            if (!$out) {
+                $out = '';
+            }
+            $this->setCacheKey('infos_projecttype_' . $tproj, $out);
+        }
+        return($out);
+    }
+    
+    /**
+     * 
+     * @param string $stcode
+     * @return string
+     */
+    public function getMarketSegment(string $stcode) : string {
+        $out = null;
+        if ($out = $this->getCacheKey('infos_marketsegment_' . $stcode)) {
+            
+        } else {
+            $out = $this->getDbf()->select('sttext2')
+                    ->from('pcsegtrh with (nolock)')
+                    ->where('subj=%s', '03')
+                    ->and('stcode=%s', $stcode)
+                    ->orderBy('stcode')
+                    ->fetchSingle();
+            if (!$out) {
+                $out = '';
+            }
+            $this->setCacheKey('infos_marketsegment_' . $stcode, $out);
+        }
+        return($out);
     }
     
     public function getUser(string $username) : \Dibi\Row {
@@ -105,11 +159,15 @@ class Infos {
     }
     
     protected function getCompaniesSRC() {
-        $out = $this->getDbf()->select('zeme, ico, przkrat, nazev, ulice, obec, psc, platdph, platdan, zeme_reg, mena, chgdat, adresa1, adresa4')
-                ->from('kmpartneri with (nolock)')
+        $out = $this->getDbf()->select('A.zeme, A.ico, A.przkrat, A.nazev, A.ulice, A.obec, A.psc, A.platdph, A.platdan, A.zeme_reg, A.mena, A.chgdat, A.adresa1, A.adresa4')
+                ->from('kmpartneri A with (nolock)')
+                    ->leftJoin('dbo.kmparsubj B with (nolock) on B.zeme = A.zeme and B.ico = A.ico')
                 ->where('1=1')
-                    ->and('plat=%s', 'A')
+                    ->and('A.plat=%s', 'A')
+                    ->and('B.subj=%s', '03')
+                    ->and('A.chgdat>=%d', new \DateTime('2010-01-01'));
                 ;
+                //$out->test(); exit;
         return($out);
     }
     

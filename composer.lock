@@ -3307,13 +3307,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/ublaboo/datagrid.git",
-                "reference": "ad7e7e3dba7f8809ac9922fd650f3c180534f423"
+                "url": "https://github.com/contributte/datagrid.git",
+                "reference": "0b933a8d39333f6930df692a00d7c8c73fa772d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ublaboo/datagrid/zipball/ad7e7e3dba7f8809ac9922fd650f3c180534f423",
-                "reference": "ad7e7e3dba7f8809ac9922fd650f3c180534f423",
+                "url": "https://api.github.com/repos/contributte/datagrid/zipball/0b933a8d39333f6930df692a00d7c8c73fa772d3",
+                "reference": "0b933a8d39333f6930df692a00d7c8c73fa772d3",
                 "shasum": ""
             },
             "require": {
@@ -3357,7 +3357,7 @@
                 "grid",
                 "nette"
             ],
-            "time": "2018-05-01T21:25:30+00:00"
+            "time": "2018-09-22T16:20:42+00:00"
         },
         {
             "name": "ublaboo/responses",

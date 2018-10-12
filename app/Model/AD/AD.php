@@ -76,7 +76,7 @@ class AD extends Adldap {
         }
         if (!$all && is_array($output)) {
             foreach($output as $key => $val) {
-                if ((substr($val['dn'], -27) != 'OU=CHPN users,DC=chpn,DC=cz') && (substr($val['dn'], -19) != 'OU=OTK,DC=otk,DC=cz')) {
+                if ((substr($val['dn'], -27) != 'OU=CHPN users,DC=chpn,DC=cz') && (substr($val['dn'], -30) != 'OU=CHPN external,DC=chpn,DC=cz')) {
                     unset($output[$key]);
                 }
             }

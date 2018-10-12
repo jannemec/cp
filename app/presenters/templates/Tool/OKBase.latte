@@ -1,4 +1,23 @@
 {block header_tmpl}
+<script type="text/javascript">
+$( function() {
+    $(".filter").bind("change", filtr);
+});
+
+var filtr = function() {
+    var stat = $('#filter-stat').val();
+    
+    
+    $("#tbody tr").show();
+    $("#tbody tr").each(function() {
+        if ((stat != '') && ($(this).attr('attr-stat') != stat)) {
+            $(this).hide();
+        }
+    });
+};
+
+
+</script>
 {/block}
 
 {block content}
@@ -7,19 +26,29 @@
     <table class="pure-table pure-table-bordered">
         <thead>
             <tr>
-                <th>{_'Os.č.'}</th>
-                <th>{_'Jméno'}</th>
-                <th>{_'Příjmení'}</th>
-                <th>{_'Email'}</th>
-                <th>{_'Tel.'}</th>
-                <th>{_'Útvar'}</th>
+                <th rowspan="2">{_'Os.č.'}</th>
+                <th rowspan="2">{_'Jméno'}</th>
+                <th rowspan="2">{_'Příjmení'}</th>
+                <th rowspan="2">{_'Email'}</th>
+                <th rowspan="2">{_'Tel.'}</th>
+                <th rowspan="2">{_'Útvar'}</th>
                 <th>{_'Stav'}</th>
-                <th>{_'Username'}</th>
+                <th rowspan="2">{_'Username'}</th>
+            </tr>
+            <tr>
+                <th>
+                    <select class="filter" id="filter-stat" attr-name="stat">
+                        <option value="">{_'vše'}</option>
+                        <option value="ok">{_'OK'}</option>
+                        <option value="nok">{_'NOK'}</option>
+                    </select>
+                </th>
+            </tr>
         </thead>
-        <tbody>
+        <tbody id="tbody">
             {foreach $employees as $employee}
-                {if !empty($employee->status)}
-                <tr>
+                {if true || !empty($employee->status)}
+                <tr attr-stat="{empty($employee->status) ? 'ok' : 'nok'|noescape}">
                     <td>{$employee->osoc}</td>
                     <td>{$employee->jmeno}</td>
                     <td>{$employee->prijmeni}</td>

@@ -23,9 +23,9 @@ class SharepointProjects extends \Nette\Application\UI\Control {
     
     public function render() {
         $this->template->setFile(dirname(__FILE__) . '/templates/SharepointProjects.latte');
-        $toDt = new \DateTime();
-        $toDt->add(new \DateInterval('P7D'));
-        $out = $this->sharePointService->getProjects(true);
+        //$toDt = new \DateTime();
+        //$toDt->add(new \DateInterval('P7D'));
+        $out = $this->sharePointService->getITProjects(true);
         $this->template->docs = array();
         foreach($out as $event) {
             if ($event == 'No data returned.') {
@@ -44,4 +44,29 @@ class SharepointProjects extends \Nette\Application\UI\Control {
         $this->template->baseurl = $this->sharePointService->getProjectsUrl(true);
         $this->template->render();
     }
+    
+    
+    /*public function render() {
+        $this->template->setFile(dirname(__FILE__) . '/templates/SharepointProjects.latte');
+        //$toDt = new \DateTime();
+        //$toDt->add(new \DateInterval('P7D'));
+        $out = $this->sharePointService->getProjects(true);
+        $this->template->docs = array();
+        foreach($out as $event) {
+            if ($event == 'No data returned.') {
+                break;
+            }
+            //\Tracy\Debugger::dump($event); exit;
+            $url = explode(';', $event->fileref);
+            $url = array_pop($url);
+            $event->url = trim($url, '#');
+            $event->lmod = \DateTime::createFromFormat('Y-m-d H:i:s', $event->modified);
+            $tm = new \DateTime();
+            $event->tm = intval($tm->diff(new \DateTime($event->Modified))->format('%d'));
+            $this->template->docs[] = $event;
+            //\Tracy\Debugger::dump($event); exit;
+        }
+        $this->template->baseurl = $this->sharePointService->getProjectsUrl(true);
+        $this->template->render();
+    }*/
 }

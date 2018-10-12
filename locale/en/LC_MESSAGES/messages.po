@@ -1,29 +1,71 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-09-12 11:29+0200\n"
-"PO-Revision-Date: 2018-09-12 11:33+0200\n"
+"POT-Creation-Date: 2018-10-12 11:58+0200\n"
+"PO-Revision-Date: 2018-10-12 11:59+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2\n"
 "X-Poedit-Basepath: ../../..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: app/presenters\n"
 "X-Poedit-SearchPath-1: app/Controls\n"
 "X-Poedit-SearchPath-2: temp/cache/latte\n"
 
-#: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:17
+#: temp/cache/latte/Home-templates-PhoneBook.latte--3888c3b636.php:59
+msgid "Telefonní seznam"
+msgstr "Phone list"
+
+#: temp/cache/latte/Home-templates-PhoneBook.latte--3888c3b636.php:64
+msgid "Jméno"
+msgstr "Name"
+
+#: temp/cache/latte/Home-templates-PhoneBook.latte--3888c3b636.php:65
+msgid "Tel"
+msgstr "Phone"
+
+#: temp/cache/latte/Home-templates-PhoneBook.latte--3888c3b636.php:66
+msgid "Mobil"
+msgstr "Mobile"
+
+#: temp/cache/latte/Home-templates-PhoneBook.latte--3888c3b636.php:67
+msgid "Email"
+msgstr "Email"
+
+#: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:19
+#: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:22
 msgid "Aktivní"
 msgstr "Active"
 
-#: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:17
+#: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:19
+#: temp/cache/latte/Home-templates-SharepointProjects.latte--0e214e6fc3.php:23
 msgid "projekty"
 msgstr "Projects"
+
+#: temp/cache/latte/Home-templates-SharepointWiFi.latte--c5382efdc4.php:23
+msgid "veřejné"
+msgstr "public"
+
+#: temp/cache/latte/Home-templates-SharepointWiFi.latte--c5382efdc4.php:30
+msgid "heslo"
+msgstr "password"
 
 #: temp/cache/latte/presenters-templates-@layout.latte--28dba5dc49.php:135
 msgid "Design"
 msgstr "Design"
+
+#: temp/cache/latte/templates-Home-default.latte--02194aaa96.php:88
+msgid "1. patro"
+msgstr "1st Floor"
+
+#: temp/cache/latte/templates-Home-default.latte--02194aaa96.php:91
+msgid "2. patro"
+msgstr "2nd Floor"
+
+#: temp/cache/latte/templates-Home-default.latte--02194aaa96.php:194
+msgid "ZDE"
+msgstr "HERE"

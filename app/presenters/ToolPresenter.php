@@ -68,6 +68,8 @@ class ToolPresenter extends BasePresenter {
     public function renderPhonesImport() {
         $this->template->title = $this->translator->translate('Telefony') . ' ';
         $this->template->page_title = $this->translator->translate('Telefony');
+        
+        
     }
     
     
@@ -109,6 +111,7 @@ class ToolPresenter extends BasePresenter {
                 }
             }
             exit;*/
+            $helpDeskOut = "Asset Name\tState\tAssigned to User\tProduct Name\tDescription\tProduct Type";
             foreach(explode("\n", $data) as $row) {
                 if (trim($row) != '') {
                     $row = explode("\t", $row);
@@ -123,7 +126,10 @@ class ToolPresenter extends BasePresenter {
                         $name = trim(implode(' ', $name) . ' ' . $tmp);
                         // Zrušení diakritiky
                         $name2 = \Model\Jannemec\Tools::utf2ascii(strtr($name, ['ö' => 'o']));
-                        $name3 = strtr($name2, ['Internet ' => '', 'Martinek' => 'Martinek1']);
+                        $name3 = strtr($name2, [
+                            'Internet ' => ''
+                            , 'Martinek' => 'Martinek1'
+                            , 'ze mzdy Truhlarova srazka' => 'Truhlarova Elena chp']);
                         $phone = trim($row[1]);
                         if (substr($phone, 0, 3) == '420') {
                             $phone = '+' . $phone;
@@ -146,10 +152,27 @@ class ToolPresenter extends BasePresenter {
                             }
                         }
                         if (!$found) {
+                            if (!in_array(substr($row[4], 0, 10), ['Fix Number'])) {
+                                $helpDeskOut .= "\n" . $phone . '';
+                                $helpDeskOut .= "\t" . 'In Store';
+                                $helpDeskOut .= "\t" . '';
+                                $helpDeskOut .= "\t" . 'mobile phone';
+                                $helpDeskOut .= "\t" . $row[4];
+                                $helpDeskOut .= "\tPhone";
+                            }
                             if (in_array(trim($row[4]), ['Minute-Rated Tariff 1.00 CZK', 'Fix Number User IP Phone 1.00 CZK', 'Fix Number User PSTN 1.00 CZK'])) {
                                 $this->flashMessage('Telefon ' . $phone . ' ' . $name . ' nenalezen v AD', 'info');
                             } else {
                                 $this->flashMessage('Telefon ' . $phone . ' ' . $name . ' nenalezen v AD', 'error');
+                            }
+                        } else {
+                            if (!in_array(substr($row[4], 0, 10), ['Fix Number'])) {
+                                $helpDeskOut .= "\n" . $phone . '';
+                                $helpDeskOut .= "\t" . 'In Use';
+                                $helpDeskOut .= "\t" . $user['displayname'];
+                                $helpDeskOut .= "\t" . 'mobile phone';
+                                $helpDeskOut .= "\t" . $row[4];
+                                $helpDeskOut .= "\tPhone";
                             }
                         }
                     }
@@ -166,12 +189,23 @@ class ToolPresenter extends BasePresenter {
                     }
                 }
             }
+            
+            $this->template->helpdeskOut = $helpDeskOut;
+            $flnm = 'phones_' . date('Ymd') . '.csv';
+            $fl = fopen(WWW_DIR . '\\temp\\' . $flnm, 'w+', false);
+            fwrite($fl, strtr($helpDeskOut, ["\t" => ',']));
+            fclose($fl);
+            $this->template->helpdeskLink = BASE_URI . 'temp/' . $flnm;
         } else {
             // Chyba
             $this->flashMessage('Data nebyla odeslána', 'error');
         }
     }
     
+    public function renderCardReader() {
+        $this->template->title = $this->translator->translate('CARD dec - hex') . ' ';
+        $this->template->page_title = $this->translator->translate('CARD dec - hex');
+    }
     
     public function renderOKBase() {
         $this->template->title = $this->translator->translate('OKBase zaměstnanci') . ' ';
@@ -181,8 +215,15 @@ class ToolPresenter extends BasePresenter {
         $this->template->users = $this->adService->getUsers(false, true);
         foreach($this->OKBaseService->getEmployees() as $employee) {
             // Nejprve zkusíme ty povolené
-            $employee->status = 'Not found';
+            $employee->status = 'Not found in AD';
             $employee->username = '';
+            /*foreach($this->template->users as $key => $user) {
+                echo \Model\Jannemec\Tools::utf2ascii($user['givenName']);
+                echo ' ';
+                echo \Model\Jannemec\Tools::utf2ascii($user['sn']);
+                echo '<br />';
+            }
+            exit;*/
             foreach($this->template->users as $key => $user) {
                 //\Tracy\Debugger::dump($user); exit;
                 if (!isset($user['disabled']) || !$user['disabled']) {
@@ -222,7 +263,7 @@ class ToolPresenter extends BasePresenter {
                     }
                 }
             }
-            if ($employee->status != 'Not found') {
+            if ($employee->status != 'Not found in AD') {
                 $this->template->employees[] = $employee;
                 continue;
             }
@@ -293,10 +334,20 @@ class ToolPresenter extends BasePresenter {
         $this->template->infos = $this->infosService->getUsers();
         foreach($this->template->employees as $employee) {
             if (empty($employee['status'])) {
-                //\Tracy\Debugger::dump($employee);
+                //\Tracy\Debugger::dump($employee);       
                 $found = false;
                 foreach($this->template->infos as $key => $val) {
-                    if (trim(mb_strtolower($employee['username']) == trim(mb_strtolower($val->useridos)))) {
+                    // Opravíme víjimky v uživatelích
+                    $username = trim(mb_strtolower($val->useridos));
+                    switch($username) {
+                        case 'nemec3':
+                            $username = 'nemec';
+                            break;
+                        case 'lepka2':
+                            $username = 'lepka';
+                            break;
+                    }
+                    if (trim(mb_strtolower($employee['username'])) == $username) {
                         // Nalezeno
                         if (trim($val->utvar) != trim($employee['utvar'])) {
                             $employee->status .= ($employee->status == '' ? '': '<br />') . 'INFOS Útvar: ' . $val->utvar . 'x' . $employee['utvar'];
@@ -318,17 +369,22 @@ class ToolPresenter extends BasePresenter {
         // A doplníme ty z AD, které jsme nenalezli
         foreach($this->template->infos as $user) {
             //\Tracy\Debugger::dump($user); exit;
-            $employee = new \Dibi\Row([
-                      'osoc' => $user['osoc']
-                    , 'status' => 'Not found in OKBase - exists in INFOS'
-                    , 'jmeno' => $user->userfull
-                    , 'prijmeni' => ''
-                    , 'utvar' => $user->utvar
-                    , 'email' => ''
-                    , 'telefon' => ''
-                    , 'username' => mb_strtolower($user->useridos)
-                    ]);
-            $this->template->employees[] = $employee;
+            // Vyhození výjimek
+            if ((strpos($user->userfull, 'infos') !== false)
+                    && (strpos($user->userfull, 'import') !== false)
+                    && (strpos($user->userfull, 'maily') !== false)) {
+                $employee = new \Dibi\Row([
+                          'osoc' => $user['osoc']
+                        , 'status' => 'Not found in OKBase - exists in INFOS'
+                        , 'jmeno' => $user->userfull
+                        , 'prijmeni' => ''
+                        , 'utvar' => $user->utvar
+                        , 'email' => ''
+                        , 'telefon' => ''
+                        , 'username' => mb_strtolower($user->useridos)
+                        ]);
+                $this->template->employees[] = $employee;
+            }
         }
     }
     
@@ -341,6 +397,200 @@ class ToolPresenter extends BasePresenter {
 		$this->redrawControl('flashes');
 		$this['officeSchemaDatagrid']->reload();
 	}*/
+    }
+    
+    public function renderProjectsImport() {
+        $this->template->title = $this->translator->translate('Provedena aktualizace projektů') . ' ';
+        $this->template->page_title = $this->translator->translate('Aktualizace porjektů');
+        
+        $projects = $this->infosService->getProjects(false, true);
+        
+        $sites = [];
+        foreach($this->sharepointService->getProjectSites() as $site) {
+            $tmp = explode('/', $url = trim($site->Url));
+            $project = array_pop($tmp);
+            $project = trim($project);
+            $obj = new \stdClass();
+            $obj->Url = $url;
+            $obj->Description = $project;
+            $sites[$project] = $obj;
+        }
+        
+        //\Tracy\Debugger::dump($sites); exit;
+        $counter = 500;
+        $updates1 = $updates2 = 0;
+        foreach($projects as $project) {
+            if (true || (trim($project->phpursale) == '0D0030C')) {
+                //\Tracy\Debugger:: dump($project);exit;
+                // If the change is older one month, quit
+                $dt = new \DateTime($project->chgtim);;
+                //\Tracy\Debugger::dump($dt->getTimestamp());exit;
+                if ($dt->getTimestamp() < time() - 30 * 24 * 3600) {
+                    break;
+                }
+                //var_dump([$dt->getTimestamp(), time() - 30 * 24 * 3600]); exit;
+                $shpProj = $this->sharepointService->getITProject(trim($project['phpursale']));
+                // Dohledání názvu projektu - aktuální/pokud je prázdný, tak sebe sama ...
+                if (empty($project->phpursaleup)) {
+                    $parent = null;
+                    $projname = trim($project->phproj);
+                } else {
+                    $parentProject = $this->sharepointService->getITProject(trim($project['phpursaleup']));
+                    if ($parentProject) {
+                        $parent = $parentProject->Id;
+                        $projname = trim($project->phproj);
+                    } else {
+                        $parent = null;
+                        $projname = trim($project->phproj);
+                    }
+                }
+                // Dohledání jména osoby
+                $personName = $this->infosService->getUser($project->userid);
+                if ($personName) {
+                    $personName = trim($personName->userfull);
+                } else {
+                    $personName = trim($project->userid);
+                }
+                // Dohledání oboru
+                $obor = $this->infosService->getMarketSegment(is_null($project->stcode) ? '' : $project->stcode);
+                if (!$obor) {
+                    $obor = trim($project->stcode);
+                }
+                // Dohledání site
+                $site = isset($sites[trim($project['phpursale'])]) ? $sites[trim($project['phpursale'])] : null;
+                
+                if (empty($shpProj)) {
+                    // Založení záznamu
+                    $record = [
+                          'name' => trim($project->phdesig1)
+                        , 'description' => trim($project->phdesig2)
+                        , 'pid' => trim($project->phpursale)
+                        , 'person' => $personName
+                        , 'project' => trim($projname)
+                        , 'parent' => $parent
+                        , 'person' => trim($project->userid)
+                        , 'contract' => trim($project->phcontract)
+                        , 'status' => trim($project->phtk) == 'Y' ? 'Active' : 'Closed'
+                        , 'product' => trim($project->dpdruh2)
+                        , 'obor' => $obor
+                        , 'sitelink' => $site
+                    ];
+                    $out = $this->sharepointService->addITProject($record);
+                    $counter--;
+                    $updates1++;
+                    if ($counter <= 0) {
+                        break;
+                    }
+                } else {
+                    // Konrola/aktualizace záznamu
+                    $update = [];
+                    if (is_null($site) && !is_null($shpProj->SiteLink)) {
+                        $update['SiteLink'] = $site;
+                    } elseif (is_null($shpProj->SiteLink) && !is_null($site)) {
+                        $update['SiteLink'] = $site;
+                    } elseif (is_null($site) && is_null($shpProj->SiteLink)) {
+                        // Do nothing
+                    } elseif (trim($site->Url) != trim($shpProj->SiteLink->Url)) {
+                        $update['SiteLink'] = $site;
+                    }
+                    if (trim($obor) != $shpProj->Obor) {
+                        $update['Obor'] = $obor;
+                    }
+                    if (trim($project->dpdruh2) != $shpProj->Product) {
+                        $update['Product'] = trim($project->dpdruh2);
+                    }
+                    if (trim($projname) != $shpProj->Project) {
+                        $update['Project'] = trim($projname);
+                    }
+                    if ($personName != $shpProj->Person) {
+                        $update['Person'] = $personName;
+                    }
+                    if (trim($project->phdesig1) != $shpProj->Title) {
+                        $update['Title'] = trim($project->phdesig1);
+                    }
+                    if (trim($project->phdesig2) != $shpProj->Description) {
+                        $update['Description'] = trim($project->phdesig2);
+                    }
+                    if (trim($project->phcontract) != $shpProj->Contract) {
+                        $update['Contract'] = trim($project->phcontract);
+                    }
+                    //var_dump([$project->phtk, $shpProj->Status]); exit;
+                    if (trim($project->phtk) == 'Y' && in_array($shpProj->Status, ['Closed', 'Canceled', 'Preparation'])) {
+                        $update['Status'] = 'Active';
+                    } elseif (trim($project->phtk) != 'Y' && in_array($shpProj->Status, ['Active', 'Preparation'])) {
+                        $update['Status'] = 'Closed';
+                    }
+                    if (!empty($update)) {
+                        /*\Tracy\Debugger::dump($shpProj);
+                        \Tracy\Debugger::dump($project);
+                        var_dump($update); exit;*/
+                        $out = $this->sharepointService->updateITProject($shpProj, $update);
+                        $counter--;
+                        $updates2++;
+                        if ($counter <= 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        $this->template->updates1 = $updates1;
+        $this->template->updates2 = $updates2;
+    }
+    
+    public function renderVendorsImport() {
+        $this->template->title = $this->translator->translate('Provedena aktualizace projektů') . ' ';
+        $this->template->page_title = $this->translator->translate('Aktualizace porjektů');
+        
+        $vendors = $this->infosService->getCompanies();
+        $counter = 100;
+        $updates1 = $updates2 = 0;
+        foreach($vendors as $vendor) {
+            //\Tracy\Debugger:: dump($vendor);exit;
+            $shpVendor = $this->sharepointService->getITVendor(trim($vendor->zeme) . trim($vendor->ico));
+            if (empty($shpVendor)) {
+                // Založení záznamu
+                $record = [
+                      'title' => trim($vendor->nazev)
+                    , 'abbreviation' => trim($vendor->przkrat)
+                    , 'idv' => trim($vendor->zeme) . trim($vendor->ico)
+                    , 'country' => trim($vendor->zeme)
+                    , 'vat' => trim($vendor->platdan)
+                ];
+                $out = $this->sharepointService->addITVendor($record);
+                //\Tracy\Debugger::dump($out); exit;
+                $counter--;
+                $updates1++;
+                if ($counter <= 0) {
+                    break;
+                }
+            } else {
+                // Konrola/aktualizace záznamu
+                $update = [];
+                if (trim($vendor->przkrat) != $shpVendor->Abbreviation) {
+                    $update['Abbreviation'] = trim($vendor->przkrat);
+                }
+                if (trim($vendor->nazev) != $shpVendor->Title) {
+                    $update['Title'] = trim($vendor->nazev);
+                }
+                if (trim($vendor->zeme) != $shpVendor->Country) {
+                    $update['Description'] = trim($vendor->zeme);
+                }
+                if (trim($vendor->platdan) != $shpVendor->VAT) {
+                    $update['VAT'] = trim($vendor->platdan);
+                }
+                if (!empty($update)) {                
+                    $out = $this->sharepointService->updateITVendor($shpVendor, $update);
+                    $counter--;
+                    $updates2++;
+                    if ($counter <= 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        $this->template->updates1 = $updates1;
+        $this->template->updates2 = $updates2;
     }
     
     public function createComponentOfficeSchemaDatagrid() {

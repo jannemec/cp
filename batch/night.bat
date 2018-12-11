@@ -6,9 +6,11 @@ rem Kontrola plátců DPH - VAT
 
 rem Import projektů INFOs -> Sharepoint
 "C:\Program Files\PHP\v7.2\php.exe" "c:\websrv\cp\index.php" "Cron:importInfosProjects" --verbose -cliCode "cp2018"
+"C:\Program Files\PHP\v7.2\php.exe" "c:\websrv\cp\index.php" "Cron:importInfosPProjects" --verbose -cliCode "cp2018"
 
 rem Import dodavatelů INFOs -> Sharepoint
 "C:\Program Files\PHP\v7.2\php.exe" "c:\websrv\cp\index.php" "Cron:importInfosVendors" --verbose -cliCode "cp2018"
+"C:\Program Files\PHP\v7.2\php.exe" "c:\websrv\cp\index.php" "Cron:importInfosPVendors" --verbose -cliCode "cp2018"
 
 
 

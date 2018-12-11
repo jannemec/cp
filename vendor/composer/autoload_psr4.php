@@ -23,6 +23,7 @@ return array(
     'PhpOffice\\Common\\' => array($vendorDir . '/phpoffice/common/src/Common'),
     'Office365\\PHP\\Client\\' => array($vendorDir . '/vgrem/php-spo/src'),
     'Mpdf\\' => array($vendorDir . '/mpdf/mpdf/src'),
+    'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'Contributte\\Utils\\' => array($vendorDir . '/contributte/utils/src'),
     'Contributte\\Tracy\\' => array($vendorDir . '/contributte/tracy/src'),

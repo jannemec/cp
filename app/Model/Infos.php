@@ -60,6 +60,15 @@ class Infos {
         }
     }
     
+    protected static $companiesToImport = ['62029100', '45272956', '27226697', '63078180', '48135267', '63998530', '25669214', '15936601'];
+    protected static $companiesToImportGeneral = ['27684547', '63998530'];
+    
+    protected static function getCompaniesToImport() : array {
+        return(self::$companiesToImport);
+    }
+    protected static function getCompaniesToImportGeneral() : array {
+        return(self::$companiesToImportGeneral);
+    }
     //==========================================================================
     /**
      * Return list of projects
@@ -67,14 +76,15 @@ class Infos {
      * @return array
      */
     public function getProjects(bool $onlyActive = true, bool $byDate = false) : array {
-        $out = $this->getDbf()->select('phproj, phpursale, phpursaleup, phcontract, phacsta, phacfin, userid, phdesig1, phdesig2, phdesig3, phac, phtk, chgtim, tproj, stcode, dpdruh2')
+        $out = $this->getDbf()->select('phproj, phpursale, phpursaleup, phcontract, phacsta, phacfin, userid, phdesig1, phdesig2, phdesig3, phac, phtk, chgtim, tproj, stcode, dpdruh2, phkukon')
                 ->from('pcprojh with (nolock)')
                 ->where('1=1')
                     ->and('subj=%s', '03')
                     //->and('phpursale=phproj')
                 ;
         if ($onlyActive) {
-            $out = $out->and('phtk=%s', 'Y');
+            $out = $out->and('phtk=%s', 'Y')
+                        ->and('phkukon is null');
         }
         if ($byDate) {
             return($out->orderBy('chgtim desc')->fetchAll());
@@ -161,11 +171,13 @@ class Infos {
     protected function getCompaniesSRC() {
         $out = $this->getDbf()->select('A.zeme, A.ico, A.przkrat, A.nazev, A.ulice, A.obec, A.psc, A.platdph, A.platdan, A.zeme_reg, A.mena, A.chgdat, A.adresa1, A.adresa4')
                 ->from('kmpartneri A with (nolock)')
-                    ->leftJoin('dbo.kmparsubj B with (nolock) on B.zeme = A.zeme and B.ico = A.ico')
+                    ->leftJoin('dbo.kmparsubj B with (nolock)')->on('B.zeme = A.zeme')->and('B.ico = A.ico')
                 ->where('1=1')
                     ->and('A.plat=%s', 'A')
-                    ->and('B.subj=%s', '03')
-                    ->and('A.chgdat>=%d', new \DateTime('2010-01-01'));
+                    ->and('((B.subj=%s and (A.chgdat>=%d or A.ico in %l)) or (B.subj is null and (A.chgdat>=%d or A.ico in %l)))', '03'
+                            , new \DateTime('2010-01-01'), self::getCompaniesToImport()
+                            , new \DateTime('2013-01-01'), self::getCompaniesToImportGeneral())
+                    //->and('A.chgdat>=%d', new \DateTime('2010-01-01'));
                 ;
                 //$out->test(); exit;
         return($out);

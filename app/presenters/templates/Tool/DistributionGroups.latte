@@ -1,0 +1,70 @@
+{block header_tmpl}
+<script type="text/javascript">
+$( function() {
+    $(".filter").bind("change", filtr);
+});
+
+var filtr = function() {
+    var stat = $('#filter-stat').val();
+    
+    var skript = $('#filter-skript').val();
+    
+    
+    $("#tbody tr").show();
+    $("#tbody tr").each(function() {
+        if ((stat != '') && ($(this).attr('attr-stat') != stat)) {
+            $(this).hide();
+        } else if ((skript != '') && ((($(this).attr('attr-skript') != skript) && (skript != '-')) || (($(this).attr('attr-skript') != '') && (skript == '-')))) {
+            $(this).hide();
+        }
+    });
+};
+
+
+</script>
+<style>
+    tr.highlighted td {
+        background-color: #F4FF77;
+    }
+    
+    tr td.small {
+        font-size:75%;
+    }
+    
+</style>
+{/block}
+
+{block content}
+<div class="pure-u-sm-24-24 main">
+    <h1 class="first_item">{_'AD uživatelů'}</h1>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+            <tr>
+                <th rowspan="2">{_'Os.č.'}</th>
+                <th rowspan="2">{_'Full'}</th>
+                <th rowspan="2">{_'Jméno'}</th>
+                <th rowspan="2">{_'Příjmení'}</th>
+                <th rowspan="2">{_'Email'}</th>
+                <th rowspan="2">{_'Tel.'}</th>
+                <th rowspan="2">{_'Útvar'}</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+            {foreach $users as $muser}
+                <tr 
+                    attr-stat="{$muser['disabled'] ? 'nok' : 'ok'|noescape}"
+                    attr-skript="{$muser['scriptPath']|noescape}">
+                    <td>{$muser['pager']}</td>
+                    <td class="small">{$muser['displayname']}</td>
+                    <td class="small">{$muser['givenName']}</td>
+                    <td class="small">{$muser['sn']}</td>
+                    <td class="small">{$muser['mail']}</td>
+                    <td>{$muser['telephoneNumber']}</td>
+                    <td>{$muser['department']}</td>
+                </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    
+</div>
+{/block}

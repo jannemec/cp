@@ -60,7 +60,57 @@ class HomePresenter extends BasePresenter {
         
         $users = $this->adService->getUsers(true, true);
         $this->template->allUsers = $users;
-        //\Tracy\Debugger::dump($users); exit;
+        //\Tracy\Debugger::dump($users['Nemec']); exit;
+        $groups = $this->adService->getGroups(false);
+        $this->template->allGroup = $groups;
+        //\Tracy\Debugger::dump($groups); exit;
+        foreach($groups as $key => $val) {
+            if (substr($key, 0, 4) == 'ORG_') {
+                $tmp = explode('_', $key);
+                $group_id = isset($tmp[1]) ? $tmp[1] : null;
+                if (!empty($group_id)) {
+                    $groups[$group_id] = $val;
+                }
+            }
+            unset($groups[$key]);
+        }
+        //\Tracy\Debugger::dump($groups); exit;
+        // Doplnění organizační struktury
+        foreach($users as $key => $val) {
+            $gr = $val['physicalDeliveryOfficeName'];
+            $orggroup = [];
+            $ok = true;
+            foreach($val['memberof'] as $gval) {
+                $group = explode(',', $gval);
+                $group = trim(strtr($group[0], ['CN=' => '']));
+                if (substr($group, 0, 4) == 'ORG_') {
+                    // Fitr jen na ty, které začínají ORG_
+                    $tmp = explode('_', $group);
+                    $group_id = isset($tmp[1]) ? $tmp[1] : null;
+                    if (!empty($group_id)) {
+                        if (substr($gr, 0, strlen($group_id)) == $group_id) {
+                            $orggroup[$group_id] = true;
+                        } else {
+                            $orggroup[$group_id] = false;
+                            $ok = false;
+                        }
+                    }
+                }
+            }
+            $users[$key]['orggroup'] = $orggroup;
+            // A zkontrolujeme chybějící skupiny
+            $missingGroups = [];
+            foreach($groups as $gkey => $gval) {
+                if (!isset($orggroup[$gkey])) {
+                    if (substr($gr, 0, strlen($gkey)) == $gkey) {
+                        $missingGroups[$gkey] = $gval;
+                        $ok = false;
+                    }
+                }
+            }
+            $users[$key]['missinggroup'] = $missingGroups;
+            $users[$key]['groupstatus'] = $ok;
+        }
         $this->template->tree = $this->createTree($users, '');
         //\Tracy\Debugger::dump($this->template->tree); exit;
     }
@@ -127,7 +177,19 @@ class HomePresenter extends BasePresenter {
             echo '<ul>';
             foreach($tree as $key => $val) {
                 echo '<li' . ($val['user']['disabled'] ? ' data-jstree=\'{"icon":"fas fa-trash"}\'' : (empty($val['subtree']) ? ' data-jstree=\'{"icon":"far fa-user"}\'' : ' data-jstree=\'{"icon":"fas fa-users"}\'')) . '>';
-                echo $key . ': ' . $val['user']['displayname'] . '(' . $val['user']['department'] . ')';
+                echo '<span class="fas ' . ($val['user']['disabled'] || $val['user']['groupstatus'] ? 'fa-check' : 'fa-times') . '"></span>';
+                echo $key . ': ' . $val['user']['displayname'] . '(' . $val['user']['department'] . ' ' . $val['user']['physicalDeliveryOfficeName'] . ')';
+                // Zobrazení skupin
+                echo '. Member of: ';
+                foreach($val['user']['orggroup'] as $gkey => $gval) {
+                    echo '<span class="fas ' . ($gval ? 'fa-check' : 'fa-times') . '"></span>' . $gkey . ', ';
+                }
+                if (!empty($val['user']['missinggroup'])) {
+                    echo '. Missing in: ';
+                    foreach($val['user']['missinggroup'] as $gkey => $gval) {
+                        echo '<span class="fas fa-times"></span>' . $gkey . ', ';
+                    }
+                }
                 if (!empty($val['subtree'])) {
                     $this->showCompanyTree($val['subtree']);
                 }

@@ -49,7 +49,7 @@ class AD extends Adldap {
         }
         if (!$all && is_array($output)) {
             foreach($output as $key => $val) {
-                if ((substr($val, -19) != 'OU=OTK,DC=otk,DC=cz') && (substr($val, -19) != 'OU=OTK,DC=otk,DC=cz')) {
+                if ((substr($val, -28) != 'OU=CHPN groups,DC=chpn,DC=cz') && (substr($val, -19) != 'OU=OTK,DC=otk,DC=cz')) {
                     unset($output[$key]);
                 }
             }
@@ -83,7 +83,7 @@ class AD extends Adldap {
         }
         return($output);
     }
-    
+      
     /**
      * Get the username and full name of user by phone number
      * Phone number without prefix +420and without spaces
@@ -145,6 +145,11 @@ class AD extends Adldap {
         if ($all) {
             $tmp = $this->contact()->all();
             foreach($tmp as $user) {
+                /*if (isset($user['sn']) && ($user['sn'] == 'Nemec Jan')) {
+                    \Tracy\Debugger::dump($user); exit;
+                } elseif (isset($user['sn'])) {
+                    echo $user['sn'] . '<br />';
+                }*/
                 $output[$user['distinguishedname']]['displayname'] = isset($user['displayname']) ? $user['displayname'] : $user['cn'];
                 $output[$user['distinguishedname']]['samaccountname'] = $user['distinguishedname'];
                 $output[$user['distinguishedname']]['memberof'] = [];
@@ -171,6 +176,9 @@ class AD extends Adldap {
                 $output[$user['distinguishedname']]['thumbnailPhoto'] = isset($user['thumbnailphoto']) ? $user['thumbnailphoto'] : '';
                 $output[$user['distinguishedname']]['manager'] = isset($user['manager']) ? $user['manager'] : '';
                 $output[$user['distinguishedname']]['sub'] = [];
+                $output[$user['distinguishedname']]['lastlogon'] = null;
+                $output[$user['distinguishedname']]['scriptPath'] = null;
+                $output[$user['distinguishedname']]['type'] = 'contact';
             }
         }
         
@@ -179,12 +187,11 @@ class AD extends Adldap {
         
         foreach($tmp as $user) {
             if ($all || (isset($user['dn']) && strtoupper(substr($user['dn'], -19)) == 'OU=CHPN users,DC=chpn,DC=cz')) {
-                /*if ($user['samaccountname'] == 'u935') {
-                    var_dump(intval($user['useraccountcontrol']));
-                    echo (((intval($user['useraccountcontrol']) & 2) > 0) ? true : false);
-                    exit;
-                    
-                };*/
+                /*if (isset($user['sn']) && ($user['sn'] == 'Nemec')) {
+                    \Tracy\Debugger::dump($user); exit;
+                } elseif (isset($user['sn'])) {
+                    echo $user['sn'] . '<br />';
+                }*/
                 $output[$user['samaccountname']]['displayname'] = isset($user['displayname']) ? $user['displayname'] : $user['cn'];
                 $output[$user['samaccountname']]['samaccountname'] = $user['samaccountname'];
                 $output[$user['samaccountname']]['memberof'] = [];
@@ -211,9 +218,19 @@ class AD extends Adldap {
                 $output[$user['samaccountname']]['thumbnailPhoto'] = isset($user['thumbnailphoto']) ? $user['thumbnailphoto'] : '';
                 $output[$user['samaccountname']]['manager'] = isset($user['manager']) ? $user['manager'] : '';
                 $output[$user['samaccountname']]['sub'] = [];
-                /*if ($user['samaccountname'] == 'u1176') {
-                    echo '<pre>';  var_dump($user); var_dump($user['useraccountcontrol']); var_dump($output[$user['samaccountname']]); echo '</pre>'; exit;
-                }*/
+                $output[$user['samaccountname']]['lastlogon'] = (isset($user['lastlogon']) && !empty($user['lastlogon'])) ? $user['lastlogon'] : null;
+                $output[$user['samaccountname']]['scriptPath'] = (isset($user['scriptpath']) && !empty($user['scriptpath'])) ? $user['scriptpath'] : null;
+                $output[$user['samaccountname']]['proxyaddresses'] = (isset($user['proxyaddresses']) && !empty($user['proxyaddresses'])) ? $user['proxyaddresses'] : null;
+                $output[$user['samaccountname']]['type'] = 'user';
+                
+                // přepočet data
+                if (!is_null($output[$user['samaccountname']]['lastlogon'])) {
+                    $tmp = new \DateTime('1601-01-01');
+                    $tmp->add(new \DateInterval('PT' . round($output[$user['samaccountname']]['lastlogon'] / 10000000) . 'S'));
+                            
+                    $output[$user['samaccountname']]['lastlogon'] = $tmp;
+                    //\Tracy\Debugger::dump($tmp); exit;
+                }
                 if (isset($user['memberof']) && is_array($user['memberof'])) {
                     foreach($user['memberof'] as $key => $val) {
                         if (is_numeric($key)) {
@@ -331,5 +348,18 @@ class AD extends Adldap {
         } else {
             return('');
         }
+    }
+    
+    public static function hasEmail(array $user):bool {
+        $out = false;
+        if (isset($user['proxyaddresses']) && is_array($user['proxyaddresses'])) {
+            foreach($user['proxyaddresses'] as $row) {
+                if ((strpos($row, '@casaleproject.cz') !== false) || (strpos($row, '@chpn.cz') !== false)) {
+                    $out = true;
+                    break;
+                }
+            }
+        }
+        return($out);
     }
 }

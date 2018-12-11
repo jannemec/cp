@@ -22,9 +22,9 @@ var calculate = function() {
     }
     
     var dval = parseInt(inp);
-    var outval = dval.toString(16);
+    var outval = dval.toString(16).toUpperCase();
     
-    $('#result').html('Card number: ' + dval + ', OKBASE Value: ' + outval.substring(6,8) + outval.substring(4,6) + outval.substring(2,4) + outval.substring(0,2));
+    $('#result').html('Card number: ' + dval + ', OKBASE Value: ' + outval.substring(6,8) + outval.substring(4,6) + outval.substring(2,4) + outval.substring(0,2) + '<br/>If from original card reader: ' + outval);
 };
 
 

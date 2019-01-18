@@ -79,196 +79,278 @@ class CronPresenter extends BasePresenter {
             // Provede srovnání zaměstnanců AD x OKBase
             $this->template->employees = [];
             $this->template->users = $this->adService->getUsers(false, true);
-            foreach($this->OKBaseService->getEmployees() as $employee) {
-                // Nejprve zkusíme ty povolené
-                $employee->status = 'Not found in AD';
-                $employee->username = '';
-                /*foreach($this->template->users as $key => $user) {
-                    echo \Model\Jannemec\Tools::utf2ascii($user['givenName']);
-                    echo ' ';
-                    echo \Model\Jannemec\Tools::utf2ascii($user['sn']);
-                    echo '<br />';
-                }
-                exit;*/
-                foreach($this->template->users as $key => $user) {
-                    //\Tracy\Debugger::dump($user); exit;
-                    if (!isset($user['disabled']) || !$user['disabled']) {
-                        if ((\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
-                                && ((\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))
-                                        || (strtr(\Model\Jannemec\Tools::utf2ascii($employee->prijmeni), $this->OKBaseService->getNamesExceptions()) == \Model\Jannemec\Tools::utf2ascii($user['sn'])))
-                                ) {
-                            // Uživatel nalezen
-                            //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
-                            $employee->status = '';
-                            if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
-                                $employee->status = 'Email: ' . $user['mail'];
-                            }
-                            // Kontrola telefonu
-                            if (($employee->telefon != strtr($user['telephoneNumber'], ['+420 ' => ''])) && ($employee->telefon != strtr($user['mobile'], ['+420 ' => '']))) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') . 'Tel: ' . $user['telephoneNumber'];
-                            }
-                            // Kontrola os.č.
-                            if (mb_strtolower($employee->osoc) != mb_strtolower($user['pager'])) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Os.č.: ' . $user['pager'];
-                            }
-                            // Kontrola oddělelní
-                            if (mb_strtolower($employee->utvar) != substr(mb_strtolower($user['physicalDeliveryOfficeName']), 0, strlen($employee->utvar))) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Útvar: ' . $user['physicalDeliveryOfficeName'];
-                            }
-                            // Kontrola oddělelní
-                            if ($user['company'] != 'CASALE PROJECT a.s.') {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Společnost: ' . $user['company'];
-                            }
-                            // Kontrola je aktivní
-                            if (isset($user['disabled']) && $user['disabled']) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Účet zablokován.';
-                            }
-                            $employee->username = $user['samaccountname'];
-                            unset($this->template->users[$key]);
-                            break;
+            $osocs = [];
+        
+        $osocs = [];
+        foreach($this->OKBaseService->getEmployees() as $employee) {
+            
+            $employee->status = 'Not found in AD';
+            $employee->username = '';
+            $employee->ADComment = '';
+            /*foreach($this->template->users as $key => $user) {
+                echo \Model\Jannemec\Tools::utf2ascii($user['givenName']);
+                echo ' ';
+                echo \Model\Jannemec\Tools::utf2ascii($user['sn']);
+                echo '<br />';
+            }
+            exit;*/
+            
+            // Nejprve ty, kde sedí jméno a osobní číslo
+            if (in_array(trim($employee->osoc), $osocs)) {
+                continue;
+            }
+            foreach($this->template->users as $key => $user) {
+                //\Tracy\Debugger::dump($user); exit;
+                //\Tracy\Debugger::dump($employee); exit;
+                if (!isset($user['disabled']) || !$user['disabled']) {
+                    if ((trim($employee->osoc) == trim($user['pager']))
+                            && (\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
+                            && ((\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))
+                                    || (strtr(\Model\Jannemec\Tools::utf2ascii($employee->prijmeni), $this->OKBaseService->getNamesExceptions()) == \Model\Jannemec\Tools::utf2ascii($user['sn'])))
+                            ) {
+                        // Uživatel nalezen
+                        //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
+                        $employee->status = '';
+                        $employee->ADComment = $user['description'];
+                        if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
+                            $employee->status = 'Email: ' . $user['mail'];
                         }
+                        // Kontrola telefonu
+                        if (($employee->telefon != strtr($user['telephoneNumber'], ['+420 ' => ''])) && ($employee->telefon != strtr($user['mobile'], ['+420 ' => '']))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') . 'Tel: ' . $user['telephoneNumber'];
+                        }
+                        // Kontrola os.č.
+                        if (mb_strtolower($employee->osoc) != mb_strtolower($user['pager'])) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Os.č.: ' . $user['pager'];
+                        }
+                        // Kontrola oddělelní
+                        if (mb_strtolower($employee->utvar) != substr(mb_strtolower($user['physicalDeliveryOfficeName']), 0, strlen($employee->utvar))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Útvar: ' . $user['physicalDeliveryOfficeName'];
+                        }
+                        // Kontrola oddělelní
+                        if ($user['company'] != 'CASALE PROJECT a.s.') {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Společnost: ' . $user['company'];
+                        }
+                        // Kontrola je aktivní
+                        if (isset($user['disabled']) && $user['disabled']) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Účet zablokován.';
+                        }
+                        $employee->username = $user['samaccountname'];
+                        unset($this->template->users[$key]);
+                        $osocs[] = trim($employee->osoc);
+                        //echo '1: ' . $employee->username . '<br />';
+                        break;
                     }
                 }
-                if ($employee->status != 'Not found in AD') {
-                    $this->template->employees[] = $employee;
-                    continue;
-                }
-
-                // A následně ty zablokované
-                foreach($this->template->users as $key => $user) {
-                    //\Tracy\Debugger::dump($user); exit;
-                    if (isset($user['disabled']) && $user['disabled']) {
-                        if ((\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
-                                && ((\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))
-                                        || (strtr(\Model\Jannemec\Tools::utf2ascii($employee->prijmeni), $this->OKBaseService->getNamesExceptions()) == \Model\Jannemec\Tools::utf2ascii($user['sn'])))
-                                ) {
-                            // Uživatel nalezen
-                            //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
-                            $employee->status = '';
-                            if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
-                                $employee->status = 'Email: ' . $user['mail'] . 'x' . $employee->email;
-                            }
-                            // Kontrola telefonu
-                            if (($employee->telefon != strtr($user['telephoneNumber'], ['+420 ' => ''])) && ($employee->telefon != strtr($user['mobile'], ['+420 ' => '']))) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') . 'Tel: ' . $user['telephoneNumber'] . 'x' . $employee->telefon;
-                            }
-                            // Kontrola os.č.
-                            if (mb_strtolower($employee->osoc) != mb_strtolower($user['pager'])) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Os.č.: ' . $user['pager'] . 'x' . $employee->osoc;
-                            }
-                            // Kontrola oddělelní
-                            if (mb_strtolower($employee->utvar) != substr(mb_strtolower($user['physicalDeliveryOfficeName']), 0, strlen($employee->utvar))) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Útvar: ' . $user['physicalDeliveryOfficeName'] . 'x' . $employee->utvar;
-                            }
-                            // Kontrola oddělelní
-                            if ($user['company'] != 'CASALE PROJECT a.s.') {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Společnost: ' . $user['company'] . 'x' . 'CASALE PROJECT a.s.';
-                            }
-                            // Kontrola je aktivní
-                            if (isset($user['disabled']) && $user['disabled']) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') .  'Účet zablokován.';
-                            }
-                            $employee->username = $user['samaccountname'];
-                            unset($this->template->users[$key]);
-                            break;
+            }
+            
+            if ($employee->status != 'Not found in AD') {
+                $this->template->employees[] = $employee;
+                continue;
+            }
+            
+            // Nejprve zkusíme ty povolené
+            if (in_array(trim($employee->osoc), $osocs)) {
+                continue;
+            }
+            foreach($this->template->users as $key => $user) {
+                //\Tracy\Debugger::dump($user); exit;
+                if (!isset($user['disabled']) || !$user['disabled']) {
+                    if ((\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
+                            && ((\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))
+                                    || (strtr(\Model\Jannemec\Tools::utf2ascii($employee->prijmeni), $this->OKBaseService->getNamesExceptions()) == \Model\Jannemec\Tools::utf2ascii($user['sn'])))
+                            ) {
+                        // Uživatel nalezen
+                        //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
+                        $employee->status = '';
+                        $employee->ADComment = $user['description'];
+                        if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
+                            $employee->status = 'Email: ' . $user['mail'];
                         }
+                        // Kontrola telefonu
+                        if (($employee->telefon != strtr($user['telephoneNumber'], ['+420 ' => ''])) && ($employee->telefon != strtr($user['mobile'], ['+420 ' => '']))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') . 'Tel: ' . $user['telephoneNumber'];
+                        }
+                        // Kontrola os.č.
+                        if (mb_strtolower($employee->osoc) != mb_strtolower($user['pager'])) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Os.č.: ' . $user['pager'];
+                        }
+                        // Kontrola oddělelní
+                        if (mb_strtolower($employee->utvar) != substr(mb_strtolower($user['physicalDeliveryOfficeName']), 0, strlen($employee->utvar))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Útvar: ' . $user['physicalDeliveryOfficeName'];
+                        }
+                        // Kontrola oddělelní
+                        if ($user['company'] != 'CASALE PROJECT a.s.') {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Společnost: ' . $user['company'];
+                        }
+                        // Kontrola je aktivní
+                        if (isset($user['disabled']) && $user['disabled']) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Účet zablokován.';
+                        }
+                        $employee->username = $user['samaccountname'];
+                        unset($this->template->users[$key]);
+                        $osocs[] = trim($employee->osoc);
+                        //echo '2: ' . $employee->username . '<br />';
+                        break;
                     }
+                }
+            }
+            if ($employee->status != 'Not found in AD') {
+                $this->template->employees[] = $employee;
+                continue;
+            }
+            
+            // A následně ty zablokované
+            if (in_array(trim($employee->osoc), $osocs)) {
+                continue;
+            }
+            foreach($this->template->users as $key => $user) {
+                //\Tracy\Debugger::dump($user); exit;
+                if (isset($user['disabled']) && $user['disabled']) {
+                    if ((\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
+                            && ((\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))
+                                    || (strtr(\Model\Jannemec\Tools::utf2ascii($employee->prijmeni), $this->OKBaseService->getNamesExceptions()) == \Model\Jannemec\Tools::utf2ascii($user['sn'])))
+                            ) {
+                        // Uživatel nalezen
+                        //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
+                        $employee->status = '';
+                        $employee->ADComment = $user['description'];
+                        if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
+                            $employee->status = 'Email: ' . $user['mail'] . 'x' . $employee->email;
+                        }
+                        // Kontrola telefonu
+                        if (($employee->telefon != strtr($user['telephoneNumber'], ['+420 ' => ''])) && ($employee->telefon != strtr($user['mobile'], ['+420 ' => '']))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') . 'Tel: ' . $user['telephoneNumber'] . 'x' . $employee->telefon;
+                        }
+                        // Kontrola os.č.
+                        if (mb_strtolower($employee->osoc) != mb_strtolower($user['pager'])) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Os.č.: ' . $user['pager'] . 'x' . $employee->osoc;
+                        }
+                        // Kontrola oddělelní
+                        if (mb_strtolower($employee->utvar) != substr(mb_strtolower($user['physicalDeliveryOfficeName']), 0, strlen($employee->utvar))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Útvar: ' . $user['physicalDeliveryOfficeName'] . 'x' . $employee->utvar;
+                        }
+                        // Kontrola oddělelní
+                        if ($user['company'] != 'CASALE PROJECT a.s.') {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Společnost: ' . $user['company'] . 'x' . 'CASALE PROJECT a.s.';
+                        }
+                        // Kontrola je aktivní
+                        if (isset($user['disabled']) && $user['disabled']) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Účet zablokován.';
+                        }
+                        $employee->username = $user['samaccountname'];
+                        unset($this->template->users[$key]);
+                        $osocs[] = trim($employee->osoc);
+                        break;
+                    }
+                }
+            }
+            $this->template->employees[] = $employee;
+        };
+        
+        // A doplníme ty z AD, které jsme nenalezli
+        foreach($this->template->users as $user) {
+            //\Tracy\Debugger::dump($user); exit;
+            if ((!isset($user['disabled']) || !$user['disabled']) && ($user['company'] == 'CASALE PROJECT a.s.')) {
+                //\Tracy\Debugger::dump($user); exit;
+                $employee = new \Dibi\Row([
+                              'osoc' => $user['pager']
+                            , 'status' => ''
+                            , 'jmeno' => $user['givenName']
+                            , 'prijmeni' => $user['sn']
+                            , 'utvar' => $user['physicalDeliveryOfficeName']
+                            , 'email' => $user['mail']
+                            , 'telefon' => $user['telephoneNumber']
+                            , 'username' => $user['samaccountname']
+                            , 'ADComment' => $user['description']
+                            ]);
+                if (true
+                    && (strpos($user['givenName'], 'travel') !== false)
+                    ) {
+                    $employee->status = 'Nenalezen v OKBase';
                 }
                 $this->template->employees[] = $employee;
-            };
-
-            // A doplníme ty z AD, které jsme nenalezli
-            foreach($this->template->users as $user) {
-                //\Tracy\Debugger::dump($user); exit;
-                if ((!isset($user['disabled']) || !$user['disabled']) && ($user['company'] == 'CASALE PROJECT a.s.')) {
-                    //\Tracy\Debugger::dump($user); exit;
-                    $employee = new \Dibi\Row([
-                                  'osoc' => $user['pager']
-                                , 'status' => ''
-                                , 'jmeno' => $user['givenName']
-                                , 'prijmeni' => $user['sn']
-                                , 'utvar' => $user['physicalDeliveryOfficeName']
-                                , 'email' => $user['mail']
-                                , 'telefon' => $user['telephoneNumber']
-                                , 'username' => $user['samaccountname']
-                                ]);
-                    if (true
-                        && (strpos($user['givenName'], 'travel') !== false)
-                        ) {
-                        $employee->status = 'Nenalezen v OKBase';
-                    }
-                    $this->template->employees[] = $employee;
-                }
             }
-
-            // Ještě zkontrolujeme uživatele z INFOSu
-            $this->template->infos = $this->infosService->getUsers();
-            foreach($this->template->employees as $employee) {
-                if (empty($employee['status'])) {
-                    //\Tracy\Debugger::dump($employee);       
-                    $found = false;
-                    foreach($this->template->infos as $key => $val) {
-                        // Opravíme víjimky v uživatelích
-                        $username = trim(mb_strtolower($val->useridos));
-                        switch($username) {
-                            case 'nemec3':
-                                $username = 'nemec';
-                                break;
-                            case 'lepka2':
-                                $username = 'lepka';
-                                break;
-                            case 'lepka':
-                                $username = 'lepka2';
-                                break;
-                            case 'krejci1':
-                                $username = 'krejci';
-                                break;
-                            case 'janousek':
-                                $username = 'janouse1';
-                                break;
-                        }
-                        //echo trim(mb_strtolower($employee['username'])) . '_' . $username . '_' . trim(mb_strtolower($val->useridos)) . '<br />';
-                        if ((trim(mb_strtolower($employee['username'])) == trim(mb_strtolower($val->useridos))) || (trim(mb_strtolower($employee['username'])) == $username)) {
-                            // Nalezeno
-                            if (trim($val->utvar) != trim($employee['utvar'])) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') . 'INFOS Útvar: ' . $val->utvar . 'x' . $employee['utvar'];
-                            }
-                            if (trim($val->osoc) != trim($employee['osoc'])) {
-                                $employee->status .= ($employee->status == '' ? '': '<br />') . 'INFOS Os č.: ' . $val->osoc . 'x' . $employee['osoc'];
-                            }
-                            $found = true;
-                            unset($this->template->infos[$key]);
+        }
+        
+        // Ještě zkontrolujeme uživatele z INFOSu
+        $this->template->infos = $this->infosService->getUsers();
+        foreach($this->template->employees as $employee) {
+            if (empty($employee['status'])) {
+                //\Tracy\Debugger::dump($employee);
+                if (!isset($employee['ADComment'])) {
+                    $employee['ADComment'] = '???';
+                }
+                $found = false;
+                foreach($this->template->infos as $key => $val) {
+                    // Opravíme výjimky v uživatelích
+                    $username = trim(mb_strtolower($val->useridos));
+                    switch($username) {
+                        case 'nemec3':
+                            $username = 'nemec';
                             break;
+                        /*case 'lepka2':
+                            $username = 'lepka';
+                            break;*/
+                        case 'lepka':
+                            $username = 'lepka';
+                            break;
+                        case 'krejci1':
+                            $username = 'krejci';
+                            break;
+                        case 'janousek':
+                            $username = 'janouse1';
+                            break;
+                        case 'marcalik':
+                            $username = 'lmarcali';
+                            break;
+                    }
+                    //echo trim(mb_strtolower($employee['username'])) . '_' . $username . '_' . trim(mb_strtolower($val->useridos)) . '<br />';
+                    if ((trim(mb_strtolower($employee['username'])) == trim(mb_strtolower($val->useridos))) || (trim(mb_strtolower($employee['username'])) == $username)) {
+                        // Nalezeno
+                        //echo trim(mb_strtolower($employee['username'])) . '<br />';
+                        if (trim($val->utvar) != trim($employee['utvar'])) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') . 'INFOS Útvar: ' . $val->utvar . 'x' . $employee['utvar'];
                         }
+                        if (trim($val->osoc) != trim($employee['osoc'])) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') . 'INFOS Os č.: ' . $val->osoc . 'x' . $employee['osoc'];
+                        }
+                        $found = true;
+                        unset($this->template->infos[$key]);
+                        break;
                     }
-                    if (!$found) {
-                        $employee['status'] = 'User not found in Infos';
+                }
+                if (!$found) {
+                    $employee['status'] = 'User not found in Infos';
+                    if (!isset($employee['ADComment'])) {
+                        $employee['ADComment'] = '???';
                     }
                 }
             }
+        }
 
-            // A doplníme ty z AD, které jsme nenalezli
-            foreach($this->template->infos as $user) {
-                //\Tracy\Debugger::dump($user); exit;
-                // Vyhození výjimek
-                if ((strpos($user->userfull, 'infos') !== false)
-                        && (strpos($user->userfull, 'import') !== false)
-                        && (strpos($user->userfull, 'maily') !== false)
-                        && (strpos($user->userfull, 'travel') !== false)
-                        ) {
-                    $employee = new \Dibi\Row([
-                              'osoc' => $user['osoc']
-                            , 'status' => 'Not found in OKBase - exists in INFOS'
-                            , 'jmeno' => $user->userfull
-                            , 'prijmeni' => ''
-                            , 'utvar' => $user->utvar
-                            , 'email' => ''
-                            , 'telefon' => ''
-                            , 'username' => mb_strtolower($user->useridos)
-                            ]);
-                    $this->template->employees[] = $employee;
-                }
+        // A doplníme ty z AD, které jsme nenalezli
+        foreach($this->template->infos as $user) {
+            //\Tracy\Debugger::dump($user); exit;
+            // Vyhození výjimek
+            if ((strpos($user->userfull, 'infos') !== false)
+                    && (strpos($user->userfull, 'import') !== false)
+                    && (strpos($user->userfull, 'maily') !== false)
+                    && (strpos($user->userfull, 'travel') !== false)
+                    ) {
+                $employee = new \Dibi\Row([
+                          'osoc' => $user['osoc']
+                        , 'status' => 'Not found in OKBase - exists in INFOS'
+                        , 'jmeno' => $user->userfull
+                        , 'prijmeni' => ''
+                        , 'utvar' => $user->utvar
+                        , 'email' => ''
+                        , 'telefon' => ''
+                        , 'username' => mb_strtolower($user->useridos)
+                        ]);
+                $this->template->employees[] = $employee;
             }
+        }
             
             
             $adActions = [];
@@ -335,14 +417,19 @@ class CronPresenter extends BasePresenter {
         $vats = $this->infosService->getCompaniesForVAT(true);
         $warrnings = array();
         $i = 1;
+        /*foreach($vats as $key => $firm) {
+            if (trim($firm->platdan) != 'CZ27082377') {
+                unset($vats[$key]);
+            }
+        }*/
         foreach($vats as $key => $firm) {
             if (in_array(trim($firm->ico), array(
                 ))) {
                 // výjimky
                 unset($vats[$key]);
-            /*} elseif (substr($firmnum, 0, 4) == 'VZOR') {
+//            } elseif (substr($firmnum, 0, 4) == 'VZOR') {
                 // vzoroví zákazníci
-                unset($vats[$key]);*/
+//                unset($vats[$key]);
             } else {
                 if (true && ($i != date('w') + 1)) {
                     unset($vats[$key]);
@@ -356,9 +443,13 @@ class CronPresenter extends BasePresenter {
         
         //var_dump(count($vats)); exit;
         foreach($vats as $key => $firm) {
+            //var_dump($firm); exit;
             if (strlen(trim($firm->platdph)) == 'N') {
                 //$warrnings[$firmnum] = 'VAT nevyplněno ' . trim($firm->OKCUNO) . ', ' . trim($firm->OKCUNM) . '!';
                 //Kontrola zrušena
+            } elseif (in_array(trim($firm->zeme), ['RU', 'TR', 'CN', 'CA', 'US', 'AU', 'CH', 'JP', 'NO'])) {
+                // Rusko, Turecko, Čína, Canada, USA, Austrálie, Švýcarsko, Japonsko, Norsko
+                //Kontrola zrušena - země které nejsou v EU
             } elseif (trim($firm->platdan) == '') {
                 $warrnings[$key] = 'VAT nevyplněn ' . trim($firm->ico) . ' ' . trim($firm->nazev) . '!';
                 //Kontrola zrušena
@@ -366,7 +457,7 @@ class CronPresenter extends BasePresenter {
                 $warrnings[$key] = 'VAT neplatný ' . trim($firm->platdan) . ', ' .  trim($firm->ico) . ' ' . trim($firm->nazev) . '!';
                 //Kontrola zrušena
             } elseif (substr($firm->platdan, 0, 2) != $firm->zeme_reg) {
-                $warrnings[$key] = 'VAT nezačíná zemí ' . trim($firm->platdan) . ', ' .  trim($firm->ico) . ' ' . trim($firm->nazev) . '!';
+                $warrnings[$key] = 'VAT nezačíná zemí ' . trim($firm->platdan) . ', ' .  trim($firm->ico) . ' ' . trim($firm->nazev) . ' země ' . trim($firm->zeme) . '!';
             } else {
                 //echo '<pre>'; var_dump(array(trim(substr(trim($firm->OKVRNO), 2)), trim(substr(trim($firm->OKVRNO), 0, 2)))); echo '</pre>';
                 $cmp = $this->soapService->checkVat(trim(substr(trim($firm->platdan), 2)), trim(substr(trim($firm->platdan), 0, 2)));
@@ -378,7 +469,8 @@ class CronPresenter extends BasePresenter {
                 // Náhrada nepoužitelných znaků ...
                 if($cmp->valid && isset($cmp->name)) {
                     $cmp->name = strtr($cmp->name, [
-                          'Å' => 'A'
+                          '&nbsp;' => ' '
+                        , 'Å' => 'A'
                         , 'Å' => 'A'
                         , 'å' => 'a'
                         //, 'Ш' => 'Š'
@@ -389,30 +481,55 @@ class CronPresenter extends BasePresenter {
                         //, 'И' => 'I'
                         //, 'Д' => 'D'
                         , 'ACCACE TAX REPRESENTATION SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ' => 'ACCACE TAX REPRESENTATION Sp. z o.o.'
+                        , 'BHDT GmbH' => 'BHDT Best High Pressure Drilling Technology'
+                        , '"Brunnbauer-Armaturen" Produktionsges.m.b.H.' => 'Brunnbauer-Armaturen'
                         , 'CÍSAŘ, ČEŠKA, SMUTNÝ s.r.o., advokátní kancel ář' => 'CÍSAŘ, ČEŠKA, SMUTNÝ s.r.o., advokátní kancelář'
                         , 'COMMERZBANK Aktiengesellschaft, pobočka Prah' => 'COMMERZBANK Aktiengesellschaft, pobočka Praha'
+                        , 'COMPANIA NAŢIONALĂ PENTRU CONTROLUL CAZANELOR, INSTALAŢIILOR DE RIDICAT ŞI RECIPIENTELOR SUB PRESIUNE - (CNCIR) SA' => 'COMPANIA NATIONALA PENTRU'
                         , 'Ди енд Ес Транс Лоджистикс - ЕООД' => 'D&S TRANS LOGISTICS LTD'
                         , 'Dи енд Ес Транс Lоджистикс - ЕООD' => 'D&S TRANS LOGISTICS LTD'
+                        , 'EDUA Company E, s.r.o.' => 'Tutor,s.r.o.'
                         , 'Emerson Automation Solutions Final Control Cz ech s.r.o.' => 'Emerson Automation Solutions Final Control Czech s.r.o.'
+                        , 'EXTRACEM KÜLÖNLEGES ÉPITŐANYAGIPARI TERMÉKEKET GYÁRTÓ ÉS FORGALMAZÓ KFT' => 'EXTRACEM Kft.'
                         , 'Hlavní město PRAHA' => 'Základní škola a mateřská škola'
                         , 'ХРАМАР - ЕООД' => 'Hramar LTD'
                         , 'Химкомплект инженеринг - АD' => 'Chimcomplect Engineering - AD'
+                        , 'Ing. Jan Moša Ing. Jan Moša - TECHNICKO INŽENÝRSKÁ ČINNOST' => 'Ing. Jan Moša - TECHNICKO INŽENÝRSKÁ ČINNOST'
                         , 'Ing. Jiří Malůšek' => 'Ing. Jiří Malůšek (KANIA patenty)'
+                        , 'Ing.Ph.D. Monika Randáková Ing. Monika Randáková - KONTO-SERVIS' => 'Ing. Monika Randáková'
+                        , 'Ing. Vojtěch Štibora Ing. Vojtěch Štibora - HILL PRODUCTION' => 'Ing. Vojtěch Štibora - HILL PRODUCTION'
+                        , "'INTERGRAPH POLSKA' SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ" => 'INTERGRAPH POLSKA Sp. z o.o.'
+                        , 'Jakub Maršíček' => 'Jakub Maršíček - MK SERVIS'
                         , 'Jan Havelka' => 'Jan Havelka -HAVE'
-                        , 'НЕОХIМ - АD' => 'NEOCHIM - AD'
+                        , 'Jiří Rákosník Jiří Rákosník- REKLAMNÍ DÍLNA' => 'Jiří Rákosník- REKLAMNÍ DÍLNA'
+                        , 'Jiří Šůcha Jiří Šůcha Odborné služby elektrotechnické' => 'Jiří Šůcha'
+                        , 'JUDr. Vladimír Zavadil JUDr. Vladimír Zavadil' => 'JUDr. Vladimír Zavadil - advokát'
+                        , 'JUDr.Ph.D. Michael Bartončík' => 'JUDr.Ph.D. Michael Bartončík, advokát'
+                        , 'JUDr. Michal Voříšek' => 'JUDr. Michal Voříšek - notář v Brně'
+                        , 'LEITNER + LEITNER AUDIT KÖNYVVIZSGÁLÓ ÉS TANÁCSADÓ KORLÁTOLT FELELŐSSÉGŰ TÁRSASÁG' => 'LEITNER + LEITNER AUDIT Kft'
+                        , 'Luboš Štorkán Luboš Štorkán - ELPOŠ' => 'Luboš Štorkán - ELPOŠ'
+                        , 'НЕОХИМ - АД' => 'NEOCHIM - AD'
+                        , 'Milan Škoda' => 'Milan Škoda - FOTO'
+                        , 'Mgr. Jana Soudková Jana Soudková' => 'Mgr. Jana Soudková'
                         , 'Mgr. Josef Bartončík' => 'Mgr. Josef Bartončík, advokát'
                         , '"MUSAT & ASOCIATII" - SOCIETATE PROFESIONALA DE AVOCATI CU RASPUNDERE LIMITATA' => 'MUSAT & ASOCIATII'
+                        , 'QUALI-TOP KERESKEDELMI ES SZOLGALTATO KORLATOLT FELELOSEGU TAR- SASAG' => 'QUALI-TOP'
                         , '-"R.& E.M. SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ"' => 'R.& E.M. Sp. z o.o.'
                         , 'ШЕЛ БЪЛГАРИЯ - ЕАД' => 'SHELL BULGARIA - EAD'
+                        , 'S & B PROCONT SRL REPREZENTANT FISCAL PENTRU UTA (UNION TANK ECKSTEIN GMBH&CO.KG' => 'UNION TANK Eckstein GmbH&Co. KG'
+                        , 'SHOP-ASSISTANT ÉPÍTŐIPARI ÉS KERESKEDELMI KORLÁTOLT FELELŐSSÉGŰ TÁRSASÁG' => 'SHOP-ASSISTANT ÉPÍTŐIPARI ÉS KERESKEDELMI Kft.'
                         , 'SIL4S TANÚSÍTÓ ÉS SZOLGÁLTATÓ KORLÁTOLT FELELŐSSÉGŰ TÁRSASÁG' => 'SIL4S TANÚSÍTÓ ÉS SZOLGÁLTATÓ  Kft'
                         , 'SMC Industrial Automation CZ s.r.o.-v jazyce českém       SMC Industrial Automation CZ Gmb H. -v jazyce německém' => 'SMC Industrial Automation CZ s.r.o.'
+                        , 'SOLARPONT KERESKEDELMI ÉS SZOLGÁLTATÓ KORLÁTOLT FELELŐSSÉGŰ TÁRSASÁG' => 'SOLARPONT KERESKEDELMI ÉS'
                         , 'SPIRAX SARCO, spol. s r.o.,' => 'SPIRAX SARCO, spol. s r.o., organizačná zložka'
                         , 'Svaz strojírenské technologie, zájmové sdruže ní (ve zkratce "SST")' => 'Svaz strojírenské technologie, zájmové sdružení'
                         , 'ТЕХНОЕКСПОРТ СТОРИДЖ - ЕООД' => 'Technoexport Storage Ltd.'
+                        , 'TOTÁL-KER SZOLNOK KENŐANYAG KERESKEDELMI KORLÁTOLT FELELŐSSÉGÜ TÁRSASÁG' => 'TOTÁL-KER SZOLNOK Kft.'
                         , 'TŰV SÜD Slovakia s.r.o.' => 'TÜV SÜD Slovakia s.r.o.'
                         , 'Václav Brožík' => 'Václav Brožík - KOVOVÝROBA'
                         , 'VENTURE INDUSTRIES SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ' => 'VENTURE INDUSTRIES Sp. z o.o.'
                         , 'Yokogawa GesmbH' => 'YOKOGAWA REPRESENTATIVE OFFICE'
+                        , 'Zibak Wail' => 'Zibak Wail - HOTEL CENTRÁL ZIBAK COMPANY'
                         //, '' => ''
                     ]);
                     $cmp->name2 = strtr($cmp->name, [
@@ -435,11 +552,15 @@ class CronPresenter extends BasePresenter {
                     ]
                             );
                 }
+                //echo '<pre>'; var_dump($cmp); echo '</pre>';
+                //echo '<pre>'; var_dump($firm);  echo '</pre>';exit;
                 if(!$cmp->valid) {
                     //$warrnings[$firmnum] = 'VAT ' . trim($firm->OKVRNO) . ' neplatný - nenalezen ' . trim($firm->OKCUNO) . ', ' . trim($firm->OKCUNM) . '!';
                     //Kontrola zrušena - systém je často nedostupný ...
                 } elseif (substr(trim($cmp->name, $trimMask), 0, strlen('Group registration')) == 'Group registration') {
                     // Cannot be verified - there is only info -Group registration - This VAT ID corresponds to a Group of Taxpayers-
+                } elseif (substr(trim($cmp->name, $trimMask), 0, strlen('Áfa csoport / VAT Group')) == 'Áfa csoport / VAT Group') {
+                    // Cannot be verified - there is only info 
                 } elseif (substr(trim($cmp->name, $trimMask), 0, strlen('SA SOC. D\'AFFRETEMENT ET DE TRANSIT')) == 'SA SOC. D\'AFFRETEMENT ET DE TRANSIT') {
                     // Změna společnosti
                 } elseif (substr(trim($cmp->name, $trimMask), 0, strlen('SA SAT TRANSPORTS')) == 'SA SAT TRANSPORTS') {
@@ -455,12 +576,22 @@ class CronPresenter extends BasePresenter {
                     // Ještě tabelátory a podobné netisknutelné znaky ...
                     $name = preg_replace("/[\s]+/", " ", $cmp->name);
                     $name = strtr($name, ['&nbsp;' => ' ']);
+                    // Unprintable char 194
+                    for($i = 0; $i < strlen($name); $i++) {
+                        if (ord(substr($name, $i)) == 194) {
+                            $name = substr($name, 0, $i) . ' ' . substr($name, $i + 1);
+                        }
+                    }
                     $name = strtr($name, ['  ' => ' ']);
                     $name = strtr($name, ['  ' => ' ']);
                     $uname = strtr($firm->nazev, ['  ' => ' ']);
                     $uname = strtr($uname, ['  ' => ' ']);
                     $u2name = strtr($firm->nazev . ' ' . trim($firm->adresa1, $trimMask), ['  ' => ' ']);
                     $u2name = strtr($u2name, ['  ' => ' ']);
+                    /*for($i = 0; $i < strlen($name); $i++) {
+                        echo ord(substr($name, $i, 1)) . '<br />';
+                    }
+                    var_dump($name); var_dump($uname);exit;*/
                     if (trim($name, $trimMask) == trim($uname, $trimMask)) {
                         // O.K.
                     } elseif (substr(trim($name, $trimMask), -strlen(trim($uname, $trimMask))) == trim($uname, $trimMask)) {
@@ -478,7 +609,7 @@ class CronPresenter extends BasePresenter {
                 }
             }
         }
-        
+        //echo '<pre>'; var_dump($warrnings); echo '</pre>'; exit;
         if (count($warrnings) != 0) {
             $mail = new \Nette\Mail\Message;
             $mail->setFrom('jnemec@casaleproject.cz', 'CASALE intranet');

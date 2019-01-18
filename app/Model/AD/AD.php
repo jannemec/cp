@@ -83,7 +83,35 @@ class AD extends Adldap {
         }
         return($output);
     }
-      
+     
+    
+    /**
+     * Vrací seznam všech uživatelů, včetně skupin, jejichž je členem
+     * @param boolean $all  Pokud je nastaveno na true, hkledá v celém ad, jinak jen větev silon
+     * @return array
+     */
+    public function getPCs($all = false, $force = false) {
+        if (true && (!$force && ($this->cache instanceOf \Nette\Caching\Cache) && ($this->cache->load('ad.pcs')))) {
+            // existuje v cache
+            $output = $this->cache->load('ad.pcs');
+        } else {
+            $output = $this->readPCs(true);
+            if ($this->cache instanceOf \Nette\Caching\Cache) {
+                $this->cache->save('ad.pcs', $output, array(
+                    \Nette\Caching\Cache::EXPIRE => time() + self::$cacheExpire,
+                    \Nette\Caching\Cache::SLIDING => FALSE));
+            }
+        }
+        if (!$all && is_array($output)) {
+            foreach($output as $key => $val) {
+                if ((substr($val['dn'], -27) != 'OU=CHPN computers,DC=chpn,DC=cz')) {// && (substr($val['dn'], -30) != 'OU=CHPN external,DC=chpn,DC=cz')) {
+                    unset($output[$key]);
+                }
+            }
+        }
+        return($output);
+    }
+    
     /**
      * Get the username and full name of user by phone number
      * Phone number without prefix +420and without spaces
@@ -145,15 +173,16 @@ class AD extends Adldap {
         if ($all) {
             $tmp = $this->contact()->all();
             foreach($tmp as $user) {
-                /*if (isset($user['sn']) && ($user['sn'] == 'Nemec Jan')) {
+                /*if (isset($user['sn']) && (false || ($user['sn'] == 'Nemec Jan'))) {
                     \Tracy\Debugger::dump($user); exit;
                 } elseif (isset($user['sn'])) {
-                    echo $user['sn'] . '<br />';
+                    //echo $user['sn'] . '<br />';
                 }*/
                 $output[$user['distinguishedname']]['displayname'] = isset($user['displayname']) ? $user['displayname'] : $user['cn'];
                 $output[$user['distinguishedname']]['samaccountname'] = $user['distinguishedname'];
                 $output[$user['distinguishedname']]['memberof'] = [];
                 $output[$user['distinguishedname']]['dn'] = $user['dn'];
+                $output[$user['distinguishedname']]['description'] = isset($user['description']) ? $user['description'] : '';
                 $output[$user['distinguishedname']]['sn'] = isset($user['sn']) ? $user['sn'] : '';
                 $output[$user['distinguishedname']]['wWWHomePage'] = isset($user['wwwhomepage']) ? $user['wwwhomepage'] : '';
                 $output[$user['distinguishedname']]['streetAddress'] = isset($user['streetaddress']) ? $user['streetaddress'] : '';
@@ -196,6 +225,7 @@ class AD extends Adldap {
                 $output[$user['samaccountname']]['samaccountname'] = $user['samaccountname'];
                 $output[$user['samaccountname']]['memberof'] = [];
                 $output[$user['samaccountname']]['dn'] = $user['dn'];
+                $output[$user['samaccountname']]['description'] = isset($user['description']) ? $user['description'] : '';
                 $output[$user['samaccountname']]['sn'] = isset($user['sn']) ? $user['sn'] : '';
                 $output[$user['samaccountname']]['wWWHomePage'] = isset($user['wwwhomepage']) ? $user['wwwhomepage'] : '';
                 $output[$user['samaccountname']]['streetAddress'] = isset($user['streetaddress']) ? $user['streetaddress'] : '';
@@ -270,6 +300,50 @@ class AD extends Adldap {
                 }
             }
         }
+        //\Tracy\Debugger::dump($output); exit;
+        return($output);
+    }
+    
+    private function readPCs($all = false) {
+        if (!$this->getLdapBind()) {
+            $this->connect();
+        }
+        $output = array();
+        
+        // Počítače
+        $tmp = $this->computer()->all();
+        
+        foreach($tmp as $pc) {
+            //\Tracy\Debugger::dump($pc); exit;
+            if ($all || (isset($pc['oc']) && strtoupper(substr($user['oc'], -19)) == 'OU=CHPN computers,DC=chpn,DC=cz')) {
+                /*if (isset($user['sn']) && ($user['sn'] == 'Nemec')) {
+                    \Tracy\Debugger::dump($user); exit;
+                } elseif (isset($user['sn'])) {
+                    echo $user['sn'] . '<br />';
+                }*/
+                $output[$pc['cn']]['displayname'] = isset($pc['cn']) ? $pc['cn'] : $pc['cn'];
+                $output[$pc['cn']]['dnshostname'] = $pc['dnshostname'];
+                $output[$pc['cn']]['oc'] = $pc['oc'];
+                $output[$pc['cn']]['dn'] = $pc['dn'];
+                $output[$pc['cn']]['description'] = isset($pc['description']) ? $pc['description'] : '';
+                $output[$pc['cn']]['operatingsystem'] = isset($pc['operatingsystem']) ? $pc['operatingsystem'] : '';
+                $output[$pc['cn']]['sn'] = isset($pc['sn']) ? $pc['sn'] : '';
+                $output[$pc['cn']]['disabled'] = isset($pc['useraccountcontrol']) ? (((intval($pc['useraccountcontrol']) & 2) > 0) ? true : false) : false;
+                
+                $output[$pc['cn']]['lastlogon'] = (isset($pc['lastlogon']) && !empty($pc['lastlogon'])) ? $pc['lastlogon'] : null;
+               
+                
+                // přepočet data
+                if (!is_null($output[$pc['cn']]['lastlogon'])) {
+                    $tmp = new \DateTime('1601-01-01');
+                    $tmp->add(new \DateInterval('PT' . round($output[$pc['cn']]['lastlogon'] / 10000000) . 'S'));
+                            
+                    $output[$pc['cn']]['lastlogondt'] = $tmp;
+                    //\Tracy\Debugger::dump($tmp); exit;
+                }
+            }
+        }
+        ksort($output);
         //\Tracy\Debugger::dump($output); exit;
         return($output);
     }

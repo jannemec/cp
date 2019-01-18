@@ -1,0 +1,68 @@
+{block header_tmpl}
+<script type="text/javascript">
+$( function() {
+    $(".filter").bind("change", filtr);
+});
+
+var filtr = function() {
+    var stat = $('#filter-stat').val();
+    
+    //var skript = $('#filter-skript').val();
+    
+    
+    $("#tbody tr").show();
+    $("#tbody tr").each(function() {
+        if ((stat != '') && ($(this).attr('attr-stat') != stat)) {
+            $(this).hide();
+        //} else if ((skript != '') && ((($(this).attr('attr-skript') != skript) && (skript != '-')) || (($(this).attr('attr-skript') != '') && (skript == '-')))) {
+        //    $(this).hide();
+        }
+    });
+};
+
+
+</script>
+<style>
+    tr.highlighted td {
+        background-color: #F4FF77;
+    }
+    
+    tr td.small {
+        font-size:75%;
+    }
+    
+</style>
+{/block}
+
+{block content}
+<div class="pure-u-sm-24-24 main">
+    <h1 class="first_item">{_'AD uživatelů'}</h1>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+            <tr>
+                <th rowspan="2">{_'Název'}</th>
+                <th rowspan="2">{_'DNS'}</th>
+                <th rowspan="2">{_'O.S.'}</th>
+                <th rowspan="2">{_'Popis'}</th>
+                <th rowspan="2">{_'DN'}</th>
+                <th rowspan="2">{_'Enabled'}</th>
+                <th rowspan="2">{_'Login'}</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+            {foreach $pcs as $key => $muser}
+            <tr class="{(empty($muser['lastlogon']) || ($muser['lastlogondt']->format('Ymd') < $limitLogin->format('Ymd'))) ? 'highlighted' : ''}">
+                <td>{$key}</td>
+                <td class="small">{$muser['dnshostname']}</td>
+                <td class="small">{$muser['operatingsystem']}</td>
+                <td class="small">{$muser['description']}</td>
+                <td class="small">{strtr($muser['dn'], [',OU=CHPN computers,DC=chpn,DC=cz' => ''])}</td>
+                <td>{$muser['disabled'] ? '&times;' : '&check;'|noescape}</td>
+                <td class="dt">{(!empty($muser['lastlogon'])) ? $muser['lastlogondt']->format('j.n.Y') : '-'}</td>
+            </tr>
+            {/foreach}
+        </tbody>
+    </table>
+    
+</div>
+{/block}

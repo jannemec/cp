@@ -69,12 +69,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/contributte/mailing.git",
-                "reference": "b4fe6b3704270d169d230cc9def169b40d2fa91f"
+                "reference": "927b7bd773bce835752ef6d9bda7c951dc3f5320"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contributte/mailing/zipball/b4fe6b3704270d169d230cc9def169b40d2fa91f",
-                "reference": "b4fe6b3704270d169d230cc9def169b40d2fa91f",
+                "url": "https://api.github.com/repos/contributte/mailing/zipball/927b7bd773bce835752ef6d9bda7c951dc3f5320",
+                "reference": "927b7bd773bce835752ef6d9bda7c951dc3f5320",
                 "shasum": ""
             },
             "require": {
@@ -121,7 +121,7 @@
                 "mailing",
                 "nette"
             ],
-            "time": "2018-11-09T11:52:09+00:00"
+            "time": "2018-12-13T04:13:47+00:00"
         },
         {
             "name": "contributte/tracy",
@@ -258,12 +258,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dg/dibi.git",
-                "reference": "dd2fd654be39a330394aa922b927b84500d26928"
+                "reference": "2b5683d0f205f7db90d6e2ccf8641731147f2daf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dg/dibi/zipball/dd2fd654be39a330394aa922b927b84500d26928",
-                "reference": "dd2fd654be39a330394aa922b927b84500d26928",
+                "url": "https://api.github.com/repos/dg/dibi/zipball/2b5683d0f205f7db90d6e2ccf8641731147f2daf",
+                "reference": "2b5683d0f205f7db90d6e2ccf8641731147f2daf",
                 "shasum": ""
             },
             "require": {
@@ -314,7 +314,7 @@
                 "sqlite",
                 "sqlsrv"
             ],
-            "time": "2018-10-25T20:33:09+00:00"
+            "time": "2018-12-14T17:47:26+00:00"
         },
         {
             "name": "h4kuna/gettext-latte",
@@ -2565,17 +2565,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "00003fbe6853e95133c68abb47cafba3e95bb303"
+                "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/00003fbe6853e95133c68abb47cafba3e95bb303",
-                "reference": "00003fbe6853e95133c68abb47cafba3e95bb303",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
+                "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
                 "shasum": ""
             },
             "require": {
                 "ext-ctype": "*",
                 "ext-dom": "*",
+                "ext-fileinfo": "*",
                 "ext-gd": "*",
                 "ext-iconv": "*",
                 "ext-libxml": "*",
@@ -2650,7 +2651,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2018-12-10T07:10:37+00:00"
+            "time": "2019-01-02T04:42:54+00:00"
         },
         {
             "name": "phpoffice/phpvisio",
@@ -2707,12 +2708,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPWord.git",
-                "reference": "9d65414684127f6290f68c2dcce39bbc0e70045c"
+                "reference": "7b7d4e4936014544aa706f4c03d3ac925d74beb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/9d65414684127f6290f68c2dcce39bbc0e70045c",
-                "reference": "9d65414684127f6290f68c2dcce39bbc0e70045c",
+                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/7b7d4e4936014544aa706f4c03d3ac925d74beb9",
+                "reference": "7b7d4e4936014544aa706f4c03d3ac925d74beb9",
                 "shasum": ""
             },
             "require": {
@@ -2744,7 +2745,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-develop": "0.16-dev"
+                    "dev-develop": "0.17-dev"
                 }
             },
             "autoload": {
@@ -2808,7 +2809,7 @@
                 "word",
                 "writer"
             ],
-            "time": "2018-10-03T21:15:31+00:00"
+            "time": "2018-12-30T00:35:03+00:00"
         },
         {
             "name": "picqer/php-barcode-generator",

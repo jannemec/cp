@@ -1,22 +1,21 @@
 parameters:
     SHAREPOINT:
-        urkl: "https://otkgroup.sharepoint.com"
         username: "jnemec@chpn.cz"
         password: "Jnem1281"
     AD:
-        controllers: 
-            1: 'prgdc11.chpn.cz'
-            2: 'prgdc12.chpn.cz'
-        base_dn: "DC=chpn,DC=cz"
-        account_suffix: ""
         username: "chpn\\admin-jn"
         password: "Jnem1281"
 
 
 database:
     dsn: 'mysql:host=127.0.0.1;dbname=cp'
-    user: cp
-    password: cp2018
+    user: root
+    password: Jnem1281
     options: 
-        a: b
- 
+
+
+services:
+    OKBaseConnection:
+        class: Dibi\Connection(config: [driver: "PDO", dsn: "sqlsrv:server=PRGSQL16;database=infos;ConnectionPooling=1;ApplicationIntent=ReadOnly", username: "sa", password: "Praha2016", database: "infos", persistent: True, lazy: True, charset: "utf-8", CharacterSet: 'UTF-8', profiler: false], name: "OKBaseView")
+    INFOSConnection:
+        class: Dibi\Connection(config: [driver: "PDO", dsn: "sqlsrv:server=PRGSQL16;database=infos;ConnectionPooling=1;ApplicationIntent=ReadOnly", username: "sa", password: "Praha2016", database: "infos", persistent: True, lazy: True, charset: "utf-8", CharacterSet: 'UTF-8', profiler: false], name: "OKBaseView")

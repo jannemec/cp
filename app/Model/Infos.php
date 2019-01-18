@@ -60,7 +60,7 @@ class Infos {
         }
     }
     
-    protected static $companiesToImport = ['62029100', '45272956', '27226697', '63078180', '48135267', '63998530', '25669214', '15936601'];
+    protected static $companiesToImport = ['62029100', '45272956', '27226697', '63078180', '48135267', '63998530', '25669214', '15936601', '26199416'];
     protected static $companiesToImportGeneral = ['27684547', '63998530'];
     
     protected static function getCompaniesToImport() : array {

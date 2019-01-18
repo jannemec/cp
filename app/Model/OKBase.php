@@ -65,7 +65,7 @@ class OKBase {
           'Quirosova Muddova' => 'Quirosova'
         , 'Martinek' => 'Martinek1'
         , 'Vostatkova Janatova' => 'Vostatkova'
-        , 'Minasi' => 'Minasi2'
+        //, 'Minasi' => 'Minasi'
     ];
     
     /**

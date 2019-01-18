@@ -34,6 +34,7 @@ var filtr = function() {
                 <th rowspan="2">{_'Útvar'}</th>
                 <th>{_'Stav'}</th>
                 <th rowspan="2">{_'Username'}</th>
+                <th rowspan="2">AD {_'Comment'}</th>
             </tr>
             <tr>
                 <th>
@@ -57,6 +58,7 @@ var filtr = function() {
                     <td>{$employee->utvar}</td>
                     <td>{$employee->status|noescape}</td>
                     <td>{$employee->username}</td>
+                    <td>{$employee->ADComment}</td>
                 </tr>
                 {/if}
             {/foreach}

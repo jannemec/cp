@@ -208,8 +208,8 @@ class ToolPresenter extends BasePresenter {
     }
     
     public function renderADUsers() {
-        $this->template->title = $this->translator->translate('AD - doména') . ' ';
-        $this->template->page_title = $this->translator->translate('AD - doména');
+        $this->template->title = $this->translator->translate('AD - doména - user') . ' ';
+        $this->template->page_title = $this->translator->translate('AD - doména - user');
         
         $this->template->users = $this->adService->getUsers(true, true);
         $this->template->skript_names = [];
@@ -222,16 +222,38 @@ class ToolPresenter extends BasePresenter {
         $this->template->limitLogin->sub(new \DateInterval('P180D'));
     }
     
+    public function renderADComps() {
+        $this->template->title = $this->translator->translate('AD - doména - PC ') . ' ';
+        $this->template->page_title = $this->translator->translate('AD - doména - PC');
+        
+        $this->template->pcs = $this->adService->getPCs(true, true);
+        //\Tracy\Debugger::dump($this->template->pcs); exit;
+        /*$this->template->skript_names = [];
+        foreach($this->template->users as $user) {
+            if (($user['type'] == 'user') && (!$user['disabled']) && !empty($user['scriptPath']) && !in_array($user['scriptPath'], $this->template->skript_names)) {
+                $this->template->skript_names[$user['scriptPath']] = $user['scriptPath'];
+            } 
+        }*/
+        $this->template->limitLogin = new \DateTime();
+        $this->template->limitLogin->sub(new \DateInterval('P180D'));
+    }
+    
     public function renderOKBase() {
         $this->template->title = $this->translator->translate('OKBase zaměstnanci') . ' ';
         $this->template->page_title = $this->translator->translate('OKBase zaměstnanci');
         
         $this->template->employees = [];
         $this->template->users = $this->adService->getUsers(false, true);
+        /*foreach($this->OKBaseService->getEmployees() as $employee) {
+            \Tracy\debugger::dump($employee->osoc);
+        };
+        exit;*/
+        $osocs = [];
         foreach($this->OKBaseService->getEmployees() as $employee) {
-            // Nejprve zkusíme ty povolené
+            
             $employee->status = 'Not found in AD';
             $employee->username = '';
+            $employee->ADComment = '';
             /*foreach($this->template->users as $key => $user) {
                 echo \Model\Jannemec\Tools::utf2ascii($user['givenName']);
                 echo ' ';
@@ -239,16 +261,24 @@ class ToolPresenter extends BasePresenter {
                 echo '<br />';
             }
             exit;*/
+            
+            // Nejprve ty, kde sedí jméno a osobní číslo
+            if (in_array(trim($employee->osoc), $osocs)) {
+                continue;
+            }
             foreach($this->template->users as $key => $user) {
                 //\Tracy\Debugger::dump($user); exit;
+                //\Tracy\Debugger::dump($employee); exit;
                 if (!isset($user['disabled']) || !$user['disabled']) {
-                    if ((\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
+                    if ((trim($employee->osoc) == trim($user['pager']))
+                            && (\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
                             && ((\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))
                                     || (strtr(\Model\Jannemec\Tools::utf2ascii($employee->prijmeni), $this->OKBaseService->getNamesExceptions()) == \Model\Jannemec\Tools::utf2ascii($user['sn'])))
                             ) {
                         // Uživatel nalezen
                         //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
                         $employee->status = '';
+                        $employee->ADComment = $user['description'];
                         if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
                             $employee->status = 'Email: ' . $user['mail'];
                         }
@@ -274,6 +304,60 @@ class ToolPresenter extends BasePresenter {
                         }
                         $employee->username = $user['samaccountname'];
                         unset($this->template->users[$key]);
+                        $osocs[] = trim($employee->osoc);
+                        //echo '1: ' . $employee->username . '<br />';
+                        break;
+                    }
+                }
+            }
+            
+            if ($employee->status != 'Not found in AD') {
+                $this->template->employees[] = $employee;
+                continue;
+            }
+            
+            // Nejprve zkusíme ty povolené
+            if (in_array(trim($employee->osoc), $osocs)) {
+                continue;
+            }
+            foreach($this->template->users as $key => $user) {
+                //\Tracy\Debugger::dump($user); exit;
+                if (!isset($user['disabled']) || !$user['disabled']) {
+                    if ((\Model\Jannemec\Tools::utf2ascii($employee->jmeno) == \Model\Jannemec\Tools::utf2ascii($user['givenName'])) 
+                            && ((\Model\Jannemec\Tools::utf2ascii($employee->prijmeni) == \Model\Jannemec\Tools::utf2ascii($user['sn']))
+                                    || (strtr(\Model\Jannemec\Tools::utf2ascii($employee->prijmeni), $this->OKBaseService->getNamesExceptions()) == \Model\Jannemec\Tools::utf2ascii($user['sn'])))
+                            ) {
+                        // Uživatel nalezen
+                        //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
+                        $employee->status = '';
+                        $employee->ADComment = $user['description'];
+                        if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
+                            $employee->status = 'Email: ' . $user['mail'];
+                        }
+                        // Kontrola telefonu
+                        if (($employee->telefon != strtr($user['telephoneNumber'], ['+420 ' => ''])) && ($employee->telefon != strtr($user['mobile'], ['+420 ' => '']))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') . 'Tel: ' . $user['telephoneNumber'];
+                        }
+                        // Kontrola os.č.
+                        if (mb_strtolower($employee->osoc) != mb_strtolower($user['pager'])) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Os.č.: ' . $user['pager'];
+                        }
+                        // Kontrola oddělelní
+                        if (mb_strtolower($employee->utvar) != substr(mb_strtolower($user['physicalDeliveryOfficeName']), 0, strlen($employee->utvar))) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Útvar: ' . $user['physicalDeliveryOfficeName'];
+                        }
+                        // Kontrola oddělelní
+                        if ($user['company'] != 'CASALE PROJECT a.s.') {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Společnost: ' . $user['company'];
+                        }
+                        // Kontrola je aktivní
+                        if (isset($user['disabled']) && $user['disabled']) {
+                            $employee->status .= ($employee->status == '' ? '': '<br />') .  'Účet zablokován.';
+                        }
+                        $employee->username = $user['samaccountname'];
+                        unset($this->template->users[$key]);
+                        $osocs[] = trim($employee->osoc);
+                        //echo '2: ' . $employee->username . '<br />';
                         break;
                     }
                 }
@@ -284,6 +368,9 @@ class ToolPresenter extends BasePresenter {
             }
             
             // A následně ty zablokované
+            if (in_array(trim($employee->osoc), $osocs)) {
+                continue;
+            }
             foreach($this->template->users as $key => $user) {
                 //\Tracy\Debugger::dump($user); exit;
                 if (isset($user['disabled']) && $user['disabled']) {
@@ -294,6 +381,7 @@ class ToolPresenter extends BasePresenter {
                         // Uživatel nalezen
                         //\Tracy\Debugger::dump($employee); \Tracy\Debugger::dump($user); exit;
                         $employee->status = '';
+                        $employee->ADComment = $user['description'];
                         if (mb_strtolower($employee->email) != mb_strtolower($user['mail'])) {
                             $employee->status = 'Email: ' . $user['mail'] . 'x' . $employee->email;
                         }
@@ -319,6 +407,7 @@ class ToolPresenter extends BasePresenter {
                         }
                         $employee->username = $user['samaccountname'];
                         unset($this->template->users[$key]);
+                        $osocs[] = trim($employee->osoc);
                         break;
                     }
                 }
@@ -340,6 +429,7 @@ class ToolPresenter extends BasePresenter {
                             , 'email' => $user['mail']
                             , 'telefon' => $user['telephoneNumber']
                             , 'username' => $user['samaccountname']
+                            , 'ADComment' => $user['description']
                             ]);
                 if (true
                     && (strpos($user['givenName'], 'travel') !== false)
@@ -354,7 +444,10 @@ class ToolPresenter extends BasePresenter {
         $this->template->infos = $this->infosService->getUsers();
         foreach($this->template->employees as $employee) {
             if (empty($employee['status'])) {
-                //\Tracy\Debugger::dump($employee);       
+                //\Tracy\Debugger::dump($employee);
+                if (!isset($employee['ADComment'])) {
+                    $employee['ADComment'] = '???';
+                }
                 $found = false;
                 foreach($this->template->infos as $key => $val) {
                     // Opravíme výjimky v uživatelích
@@ -366,14 +459,17 @@ class ToolPresenter extends BasePresenter {
                         /*case 'lepka2':
                             $username = 'lepka';
                             break;*/
-                        /*case 'lepka':
-                            $username = 'lepka2';
-                            break;*/
+                        case 'lepka':
+                            $username = 'lepka';
+                            break;
                         case 'krejci1':
                             $username = 'krejci';
                             break;
                         case 'janousek':
                             $username = 'janouse1';
+                            break;
+                        case 'marcalik':
+                            $username = 'lmarcali';
                             break;
                     }
                     //echo trim(mb_strtolower($employee['username'])) . '_' . $username . '_' . trim(mb_strtolower($val->useridos)) . '<br />';
@@ -393,6 +489,9 @@ class ToolPresenter extends BasePresenter {
                 }
                 if (!$found) {
                     $employee['status'] = 'User not found in Infos';
+                    if (!isset($employee['ADComment'])) {
+                        $employee['ADComment'] = '???';
+                    }
                 }
             }
         }

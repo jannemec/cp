@@ -31,17 +31,37 @@ class HomePresenter extends BasePresenter {
         
         $this->template->officeMap = [];
         $this->template->users = $this->adService->getUsers(false);
+        // First we will check the actual positions
+        $personsDone = [];
+        foreach($this->systemService->getOfficeSchemaDataSource() as $person) {
+            $person = $person->toArray();
+            if (!empty($person['personact'])) {
+                $person['name'] = empty($person['personact']) ? $person['persondef'] : $person['personact'];
+                $person['txt'] = '<b>' . $person['name'] . '</b>';
+                foreach($this->template->users as $user) {
+                    //var_dump($user); exit;
+                    if (($person['name'] == $user['displayname']) || ($person['name'] == $user['displayname'] . ' ' . $user['pager'])) {
+                        $person['txt'] .= '<br />' . $user['title'] . '<br />' . $user['telephoneNumber'] . '<br />' . $user['mail'];
+                    }
+                }
+                $this->template->officeMap[$person['name']] = $person;
+            }
+        };
+        
+        // And then the default if active not found
         foreach($this->systemService->getOfficeSchemaDataSource() as $person) {
             $person = $person->toArray();
             $person['name'] = empty($person['personact']) ? $person['persondef'] : $person['personact'];
             $person['txt'] = '<b>' . $person['name'] . '</b>';
-            foreach($this->template->users as $user) {
-                //var_dump($user); exit;
-                if (($person['name'] == $user['displayname']) || ($person['name'] == $user['displayname'] . ' ' . $user['pager'])) {
-                    $person['txt'] .= '<br />' . $user['title'] . '<br />' . $user['telephoneNumber'] . '<br />' . $user['mail'];
+            if (!isset($this->template->officeMap[$person['name']])) {
+                foreach($this->template->users as $user) {
+                    //var_dump($user); exit;
+                    if (($person['name'] == $user['displayname']) || ($person['name'] == $user['displayname'] . ' ' . $user['pager'])) {
+                        $person['txt'] .= '<br />' . $user['title'] . '<br />' . $user['telephoneNumber'] . '<br />' . $user['mail'];
+                    }
                 }
+                $this->template->officeMap[] = $person;
             }
-            $this->template->officeMap[] = $person;
         };
         
         if ($this->isAjax()) {
